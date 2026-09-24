@@ -1,0 +1,24 @@
+// Throwaway Phase 5.0 egress gate. Not the production Worker.
+// Delete this app after docs/WORKERS_EGRESS.md has enough multi-colo data.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "torob-egress-probe",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-20",
+  // No nodejs_compat — keep the probe on the same web-standard surface as core.
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "kv_namespaces": [
+    {
+      "binding": "RESULTS",
+      "id": "d5e364fc5fe440e585d210b11e2610da"
+    }
+  ],
+  "triggers": {
+    // Self-hit once an hour so samples accumulate even without manual curls.
+    "crons": ["0 * * * *"]
+  }
+}
