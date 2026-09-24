@@ -1,0 +1,33 @@
+{
+ "_fixture": "Upstream error bodies — note three different shapes for what are all HTTP 404s",
+ "data": {
+  "not_found": {
+   "status": 404,
+   "body": {
+    "message": "Base product not found: 00000000-0000-0000-0000-000000000000"
+   }
+  },
+  "malformed_id": {
+   "status": 404,
+   "body": {
+    "random_key": "not-a-uuid"
+   }
+  },
+  "missing_param": {
+   "status": 404,
+   "body": {
+    "error": {
+     "message": "اطلاعات محصول درخواست شده وجود ندارد."
+    }
+   }
+  },
+  "bad_shop_id": {
+   "status": 400,
+   "body": {
+    "error": {
+     "message": "شناسه‌ی فروشگاه معتبر نیست."
+    }
+   }
+  }
+ }
+}
