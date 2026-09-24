@@ -58,7 +58,7 @@ export async function runPriceChart(runtime: Runtime, rawId: string): Promise<Pr
   const chart = unwrap(
     await request(runtime, endpoints.priceChart(id), PriceChartResponseSchema, {
       ttlSeconds: runtime.config.ttl.priceChart,
-      cacheKey: cacheKeyFor({ prk: id }),
+      cacheKey: await cacheKeyFor({ prk: id }),
     }),
   );
 
@@ -179,14 +179,17 @@ export async function runSuggest(
     runtime,
     endpoints.suggestion(normalized),
     SuggestionResponseSchema,
-    { ttlSeconds: runtime.config.ttl.search, cacheKey: cacheKeyFor({ q: normalized }) },
+    { ttlSeconds: runtime.config.ttl.search, cacheKey: await cacheKeyFor({ q: normalized }) },
   );
 
   const search = await request(
     runtime,
     endpoints.search({ query: normalized, page: 0, size: 1 }),
     SearchResponseSchema,
-    { ttlSeconds: runtime.config.ttl.search, cacheKey: cacheKeyFor({ q: normalized, size: 1 }) },
+    {
+      ttlSeconds: runtime.config.ttl.search,
+      cacheKey: await cacheKeyFor({ q: normalized, size: 1 }),
+    },
   );
 
   const texts: string[] = [];

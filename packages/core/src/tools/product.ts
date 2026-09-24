@@ -40,7 +40,7 @@ export async function fetchDetails(runtime: Runtime, rawId: string): Promise<Det
   return unwrap(
     await request(runtime, endpoints.details(id), DetailsResponseSchema, {
       ttlSeconds: runtime.config.ttl.product,
-      cacheKey: cacheKeyFor({ prk: id }),
+      cacheKey: await cacheKeyFor({ prk: id }),
     }),
   );
 }
@@ -334,12 +334,12 @@ export async function runSimilarProducts(
   const response = unwrap(
     await request(runtime, endpoints.similar(id), SimilarResponseSchema, {
       ttlSeconds: runtime.config.ttl.search,
-      cacheKey: cacheKeyFor({ prk: id }),
+      cacheKey: await cacheKeyFor({ prk: id }),
     }),
   );
 
   const all = response.results.map(projectCard);
-  const page = paginate(all, 'similar_products', { product_id: id }, args.limit, args.cursor);
+  const page = await paginate(all, 'similar_products', { product_id: id }, args.limit, args.cursor);
 
   return {
     products: page.items,

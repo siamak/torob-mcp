@@ -63,7 +63,7 @@ export async function runProductSellers(
   const response = unwrap(
     await request(runtime, endpoints.sellers(id, 'online'), SellersResponseSchema, {
       ttlSeconds: runtime.config.ttl.product,
-      cacheKey: cacheKeyFor({ prk: id, list: 'online' }),
+      cacheKey: await cacheKeyFor({ prk: id, list: 'online' }),
     }),
   );
 
@@ -71,7 +71,7 @@ export async function runProductSellers(
   if (args.in_stock_only === true) offers = offers.filter((o) => o.in_stock !== false);
   offers = args.sort === 'cheapest' ? sortByPrice(offers) : rankOffers(offers);
 
-  const page = paginate(
+  const page = await paginate(
     offers,
     'product_sellers',
     { product_id: id, sort: args.sort, in_stock_only: args.in_stock_only },
@@ -146,12 +146,12 @@ export async function runProductStores(
   const response = unwrap(
     await request(runtime, endpoints.sellers(id, 'in_store', city), SellersResponseSchema, {
       ttlSeconds: runtime.config.ttl.product,
-      cacheKey: cacheKeyFor({ prk: id, list: 'in_store', city }),
+      cacheKey: await cacheKeyFor({ prk: id, list: 'in_store', city }),
     }),
   );
 
   const stores = rankOffers(response.results.map(projectStore));
-  const page = paginate(
+  const page = await paginate(
     stores,
     'product_stores',
     { product_id: id, city: city ?? null },
@@ -180,7 +180,7 @@ async function resolveCity(
 
   const response = await request(runtime, endpoints.cityList(normalized), CityListResponseSchema, {
     ttlSeconds: runtime.config.ttl.city,
-    cacheKey: cacheKeyFor({ city: normalized }),
+    cacheKey: await cacheKeyFor({ city: normalized }),
   });
   if (!response.ok) return undefined;
 
@@ -239,7 +239,7 @@ export async function runShopProfile(runtime: Runtime, rawShopId: number): Promi
   const shop = unwrap(
     await request(runtime, endpoints.shop(id), ShopResponseSchema, {
       ttlSeconds: runtime.config.ttl.shop,
-      cacheKey: cacheKeyFor({ shop: id }),
+      cacheKey: await cacheKeyFor({ shop: id }),
     }),
   );
 

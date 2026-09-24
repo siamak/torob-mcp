@@ -79,14 +79,14 @@ export interface Page<T> {
  * Used wherever upstream hands back the whole list at once — notably the sellers endpoint, which
  * ignores page and size entirely, so page 2 costs zero further requests.
  */
-export function paginate<T>(
+export async function paginate<T>(
   all: readonly T[],
   tool: string,
   args: Record<string, unknown>,
   limit: number,
   cursor?: string,
-): Page<T> {
-  const key = argsKey(args);
+): Promise<Page<T>> {
+  const key = await argsKey(args);
   const offset = cursor === undefined ? 0 : decodeCursor(cursor, tool, key);
   const items = all.slice(offset, offset + limit);
   const nextOffset = offset + items.length;
@@ -96,7 +96,7 @@ export function paginate<T>(
 }
 
 /** Cache key material: normalized arguments only, never a raw URL with its tracking params. */
-export function cacheKeyFor(args: Record<string, unknown>): string {
+export function cacheKeyFor(args: Record<string, unknown>): Promise<string> {
   return argsKey(args);
 }
 

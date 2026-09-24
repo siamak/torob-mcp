@@ -99,7 +99,7 @@ export async function runSearch(
   tool: 'search_torob' | 'browse_category',
 ): Promise<SearchResult> {
   const { cursor, limit, ...bound } = args;
-  const key = argsKey(bound as Record<string, unknown>);
+  const key = await argsKey(bound as Record<string, unknown>);
   const offset = cursor === undefined ? 0 : decodeCursor(cursor, tool, key);
 
   const size = Math.min(limit, UPSTREAM_MAX_SIZE);
@@ -109,7 +109,7 @@ export async function runSearch(
   const response = unwrap(
     await request(runtime, spec, SearchResponseSchema, {
       ttlSeconds: runtime.config.ttl.search,
-      cacheKey: cacheKeyFor({ ...bound, page, size }),
+      cacheKey: await cacheKeyFor({ ...bound, page, size }),
     }),
   );
 
@@ -270,7 +270,7 @@ export async function runSearchFilters(
   const response = unwrap(
     await request(runtime, spec, SearchResponseSchema, {
       ttlSeconds: runtime.config.ttl.search,
-      cacheKey: cacheKeyFor({ ...args, kind: 'filters' }),
+      cacheKey: await cacheKeyFor({ ...args, kind: 'filters' }),
     }),
   );
 
@@ -292,7 +292,10 @@ export async function runSearchFilters(
       runtime,
       endpoints.brandList(endpoints.categoryId(args.category_id)),
       BrandListResponseSchema,
-      { ttlSeconds: runtime.config.ttl.shop, cacheKey: cacheKeyFor({ cat: args.category_id }) },
+      {
+        ttlSeconds: runtime.config.ttl.shop,
+        cacheKey: await cacheKeyFor({ cat: args.category_id }),
+      },
     );
     if (listed.ok) {
       finalBrands = listed.value.map((b) => buildBrand(b.id, b.name1, b.name2)).slice(0, 20);
