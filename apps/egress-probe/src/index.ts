@@ -110,7 +110,11 @@ const CHALLENGE_MARKERS = [
   'cloudflare',
 ] as const;
 
-function classifyBody(status: number | null, contentType: string | null, text: string): {
+function classifyBody(
+  status: number | null,
+  contentType: string | null,
+  text: string,
+): {
   kind: BodyKind;
   markers: string[];
 } {
@@ -187,7 +191,9 @@ function verdictOf(endpoints: readonly EndpointResult[]): ProbeReport['verdict']
   if (endpoints.some((e) => e.body_kind === 'error' && e.status === null)) {
     // Network-level failures still count toward blocked for gate purposes if any JSON is missing.
   }
-  const clean = endpoints.filter((e) => e.body_kind === 'json' && e.status !== null && e.status < 500);
+  const clean = endpoints.filter(
+    (e) => e.body_kind === 'json' && e.status !== null && e.status < 500,
+  );
   const blocked = endpoints.filter(
     (e) => e.body_kind === 'challenge' || e.body_kind === 'html' || e.body_kind === 'error',
   );
@@ -267,7 +273,11 @@ export default {
     return json({ error: 'not found', paths: ['/probe', '/results', '/healthz'] }, 404);
   },
 
-  async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+  async scheduled(
+    _controller: ScheduledController,
+    env: Env,
+    ctx: ExecutionContext,
+  ): Promise<void> {
     // Cron has no inbound Request.cf; colo will be null — still useful for time-series.
     ctx.waitUntil(
       (async () => {

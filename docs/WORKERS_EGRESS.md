@@ -6,12 +6,12 @@ Iranian-egress **relay**. Do not start 5.1 / 5.2 until this file names a mode.
 
 Probe Worker (throwaway): `https://torob-egress-probe.s-mokhtari75.workers.dev`
 
-| Path        | Purpose                                              |
-| ----------- | ---------------------------------------------------- |
-| `GET /probe`   | Hit every endpoint in `docs/ENDPOINTS.md`, return report, store in KV |
-| `GET /results` | Samples for `?day=YYYY-MM-DD` (default: today)       |
-| `GET /healthz` | Liveness, no upstream call                           |
-| cron `0 * * * *` | Hourly self-probe (colo may be null on cron)      |
+| Path             | Purpose                                                               |
+| ---------------- | --------------------------------------------------------------------- |
+| `GET /probe`     | Hit every endpoint in `docs/ENDPOINTS.md`, return report, store in KV |
+| `GET /results`   | Samples for `?day=YYYY-MM-DD` (default: today)                        |
+| `GET /healthz`   | Liveness, no upstream call                                            |
+| cron `0 * * * *` | Hourly self-probe (colo may be null on cron)                          |
 
 Source: `apps/egress-probe/`. Delete the Worker and KV namespace after the mode is locked.
 
@@ -19,11 +19,11 @@ Source: `apps/egress-probe/`. Delete the Worker and KV namespace after the mode 
 
 ## Decision rule
 
-| Verdict over several days / colos | Upstream mode |
-| --------------------------------- | ------------- |
-| Consistently **clean** JSON (no HTML / challenge) | **`direct`** — Worker fetches Torob itself |
-| Any recurring **challenge / HTML / block** | **`relay`** — Worker signs requests to an Iranian-egress relay |
-| Mixed / flaky | Prefer **`relay`**. Do not ship direct on a maybe. |
+| Verdict over several days / colos                 | Upstream mode                                                  |
+| ------------------------------------------------- | -------------------------------------------------------------- |
+| Consistently **clean** JSON (no HTML / challenge) | **`direct`** — Worker fetches Torob itself                     |
+| Any recurring **challenge / HTML / block**        | **`relay`** — Worker signs requests to an Iranian-egress relay |
+| Mixed / flaky                                     | Prefer **`relay`**. Do not ship direct on a maybe.             |
 
 "Clean" means `body_kind === "json"` and HTTP status is a normal API response (typically 200),
 not a Cloudflare/Torob challenge page mislabelled as success.
@@ -34,19 +34,19 @@ not a Cloudflare/Torob challenge page mislabelled as success.
 
 Eleven GETs, same hosts as production (`api.torob.com` only):
 
-| Name          | Path |
-| ------------- | ---- |
-| `search`      | `/v4/base-product/search/?q=iphone&page=0&size=1` |
-| `suggestion2` | `/suggestion2/?q=ayfon&source=next` |
-| `details`     | `/v4/base-product/details/?prk=<fixture>` |
-| `sellers`     | `/v4/base-product/sellers/?…&list_type=products_info` |
+| Name          | Path                                                           |
+| ------------- | -------------------------------------------------------------- |
+| `search`      | `/v4/base-product/search/?q=iphone&page=0&size=1`              |
+| `suggestion2` | `/suggestion2/?q=ayfon&source=next`                            |
+| `details`     | `/v4/base-product/details/?prk=<fixture>`                      |
+| `sellers`     | `/v4/base-product/sellers/?…&list_type=products_info`          |
 | `stores`      | `/v4/base-product/sellers/?…&list_type=products_in_store_info` |
-| `map_sellers` | `/v4/base-product/map/sellers/?prk=<fixture>` |
-| `price_chart` | `/v4/base-product/price-chart/?prk=<fixture>` |
-| `similar`     | `/v4/base-product/similar-base-product/?prk=<fixture>` |
-| `shop`        | `/v4/internet-shop/details/?id=299463` |
-| `city_list`   | `/v4/city/list/?search=تهران&size=5` |
-| `brand_list`  | `/v4/brand/list/?cat_list=94` |
+| `map_sellers` | `/v4/base-product/map/sellers/?prk=<fixture>`                  |
+| `price_chart` | `/v4/base-product/price-chart/?prk=<fixture>`                  |
+| `similar`     | `/v4/base-product/similar-base-product/?prk=<fixture>`         |
+| `shop`        | `/v4/internet-shop/details/?id=299463`                         |
+| `city_list`   | `/v4/city/list/?search=تهران&size=5`                           |
+| `brand_list`  | `/v4/brand/list/?cat_list=94`                                  |
 
 Fixture product id: `57ea65ae-0798-4cd0-96a7-38d8af180345` (from `fixtures/search.json`).
 Shop id: `299463` (from `fixtures/shop_details.json`).
@@ -65,31 +65,31 @@ endpoints returned `application/json` 200. Client edge: Cloudflare `IST` / `loc=
 
 ### Cloudflare Worker samples
 
-| Time (UTC)            | Worker colo | Client country | Verdict | Clean / 11 | Notes |
-| --------------------- | ----------- | -------------- | ------- | ---------- | ----- |
-| 2026-09-24T16:14:54Z  | **WAW**     | TR             | **clean** | 11 / 11  | curl → workers.dev |
-| 2026-09-24T16:15:22Z  | **WAW**     | TR             | **clean** | 11 / 11  | curl → workers.dev |
-| 2026-09-24T16:15:25Z  | **MCI**     | US             | **clean** | 11 / 11  | independent fetch (US vantage) |
-| 2026-09-24T16:16:58Z  | **EWR**     | US             | **clean** | 11 / 11  | independent fetch (US East) |
+| Time (UTC)           | Worker colo | Client country | Verdict   | Clean / 11 | Notes                          |
+| -------------------- | ----------- | -------------- | --------- | ---------- | ------------------------------ |
+| 2026-09-24T16:14:54Z | **WAW**     | TR             | **clean** | 11 / 11    | curl → workers.dev             |
+| 2026-09-24T16:15:22Z | **WAW**     | TR             | **clean** | 11 / 11    | curl → workers.dev             |
+| 2026-09-24T16:15:25Z | **MCI**     | US             | **clean** | 11 / 11    | independent fetch (US vantage) |
+| 2026-09-24T16:16:58Z | **EWR**     | US             | **clean** | 11 / 11    | independent fetch (US East)    |
 
 No challenge markers. No HTML bodies. Latencies from Workers were roughly 100–1300 ms per
 endpoint (search / details / similar at the high end); total `/probe` wall time ≈ 5–6 s.
 
 ### Per-endpoint (representative WAW sample)
 
-| Endpoint     | Status | Kind | Latency |
-| ------------ | ------ | ---- | ------- |
-| search       | 200    | json | 1207 ms |
-| suggestion2  | 200    | json | 292 ms  |
-| details      | 200    | json | 307 ms  |
-| sellers      | 200    | json | 230 ms  |
-| stores       | 200    | json | 274 ms  |
-| map_sellers  | 200    | json | 216 ms  |
-| price_chart  | 200    | json | 206 ms  |
-| similar      | 200    | json | 994 ms  |
-| shop         | 200    | json | 719 ms  |
-| city_list    | 200    | json | 125 ms  |
-| brand_list   | 200    | json | 111 ms  |
+| Endpoint    | Status | Kind | Latency |
+| ----------- | ------ | ---- | ------- |
+| search      | 200    | json | 1207 ms |
+| suggestion2 | 200    | json | 292 ms  |
+| details     | 200    | json | 307 ms  |
+| sellers     | 200    | json | 230 ms  |
+| stores      | 200    | json | 274 ms  |
+| map_sellers | 200    | json | 216 ms  |
+| price_chart | 200    | json | 206 ms  |
+| similar     | 200    | json | 994 ms  |
+| shop        | 200    | json | 719 ms  |
+| city_list   | 200    | json | 125 ms  |
+| brand_list  | 200    | json | 111 ms  |
 
 MCI (US) and EWR (US East) samples matched: **11 / 11 json**, including full `details` bodies
 (~239–243 KB). Five day-1 samples are stored in the probe KV (`GET /results`).
@@ -109,10 +109,10 @@ Worker will keep writing samples to KV. Before locking the mode:
 3. If any sample shows `challenge` / `html` / systemic `error`, switch the decision to **`relay`**
    and proceed with 5.1. Do not treat a single flaky hour as noise if it repeats.
 
-| Mode | Meaning for Phase 5 |
-| ---- | ------------------- |
+| Mode       | Meaning for Phase 5                                                                        |
+| ---------- | ------------------------------------------------------------------------------------------ |
 | **direct** | Skip 5.1. Implement 5.2 Worker with `Runtime.fetch` → Torob. Keep relay design in reserve. |
-| **relay**  | Build `apps/relay` (5.1) on Iranian egress + Tunnel, then Worker signed fetch (5.2). |
+| **relay**  | Build `apps/relay` (5.1) on Iranian egress + Tunnel, then Worker signed fetch (5.2).       |
 
 **Decision (fill in):** `_pending — awaiting 48h more samples / maintainer call_`
 

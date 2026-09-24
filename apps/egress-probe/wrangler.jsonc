@@ -9,16 +9,16 @@
   "workers_dev": true,
   "observability": {
     "enabled": true,
-    "head_sampling_rate": 1
+    "head_sampling_rate": 1,
   },
   "kv_namespaces": [
     {
       "binding": "RESULTS",
-      "id": "d5e364fc5fe440e585d210b11e2610da"
-    }
+      "id": "d5e364fc5fe440e585d210b11e2610da",
+    },
   ],
   "triggers": {
     // Self-hit once an hour so samples accumulate even without manual curls.
-    "crons": ["0 * * * *"]
-  }
+    "crons": ["0 * * * *"],
+  },
 }
