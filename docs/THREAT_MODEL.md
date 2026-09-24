@@ -1,11 +1,12 @@
-# torob-mcp — threat model
+# Threat model
 
-Initial version, Phase 1. Revisited at Phase 3 (controls land) and Phase 5 (Worker + relay).
-Controls referenced here are specified in `docs/ARCHITECTURE.md`; upstream behaviour is from
-`docs/ENDPOINTS.md`.
+Controls referenced here are specified in [ARCHITECTURE.md](ARCHITECTURE.md); upstream behaviour is
+from [ENDPOINTS.md](ENDPOINTS.md).
 
 The framing that matters: **torob-mcp runs on other people's machines, and its output lands
 directly in an LLM's context window.** Those two facts drive everything below.
+
+[Docs index](README.md) · [Privacy](PRIVACY.md) · [Security policy](../SECURITY.md)
 
 ---
 

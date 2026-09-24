@@ -2,6 +2,22 @@
 
 Read this first: **where you run it matters more than how.**
 
+[Docs index](README.md) · [README](../README.md) · [Privacy](PRIVACY.md)
+
+## Contents
+
+- [The egress problem](#the-egress-problem)
+- [Local use](#local-use)
+- [Docker](#docker)
+- [Iranian VPS](#iranian-vps--the-recommended-option)
+- [Fly.io](#flyio)
+- [Railway](#railway)
+- [Cloudflare Workers](#cloudflare-workers)
+- [Operating notes](#operating-notes)
+- [Releasing](#releasing-maintainer)
+
+---
+
 ## The egress problem
 
 Torob serves its JSON API to ordinary visitors without authentication, but it blocks a great many
@@ -41,9 +57,9 @@ JSON means you are fine. HTML means you are blocked.
 
 ## Local use
 
-No deployment needed. See the README — `claude mcp add torob -- npx -y torob-mcp` and you are done.
-This is the right choice for almost everyone; the sections below matter only if you want a shared
-remote server.
+No deployment needed. See the [README](../README.md) — `claude mcp add torob -- npx -y torob-mcp`
+and you are done. This is the right choice for almost everyone; the sections below matter only if
+you want a shared remote server.
 
 ## Docker
 

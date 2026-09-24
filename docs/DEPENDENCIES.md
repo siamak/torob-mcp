@@ -4,6 +4,10 @@ Every runtime dependency is a permanent liability: it runs on other people's mac
 process that talks to the network and feeds an LLM. This file exists so adding one is a decision,
 not a reflex. **A new runtime dependency needs an entry here and a review.**
 
+[Docs index](README.md) · [Architecture](ARCHITECTURE.md) · [Contributing](../CONTRIBUTING.md)
+
+---
+
 ## Runtime
 
 ### `packages/core` — two, both unavoidable
@@ -30,12 +34,12 @@ workerd.
 
 | Not used                                          | Why not                                                                                                                                                                                                                               |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cheerio`, `jsdom`, any HTML parser               | Phase 0 found a JSON endpoint for every capability, including shop profiles, which looked like it would need HTML. See `docs/ENDPOINTS.md`.                                                                                           |
+| `cheerio`, `jsdom`, any HTML parser               | Phase 0 found a JSON endpoint for every capability, including shop profiles, which looked like it would need HTML. See [ENDPOINTS.md](ENDPOINTS.md).                                                                                 |
 | `jalaali-js`, `date-fns-jalali`, `moment-jalaali` | The Jalali→Gregorian conversion is closed-form integer arithmetic, about 40 lines in `lib/fa.ts`. It is a **devDependency** instead, used as the oracle in a property test — so we get the correctness guarantee without shipping it. |
 | `axios`, `node-fetch`, `got`                      | `fetch` is built in and is what the injected `Runtime.fetch` expects.                                                                                                                                                                 |
 | `lodash`, `ramda`                                 | Nothing here needs them.                                                                                                                                                                                                              |
 | A rate-limiter library                            | The token bucket is ~40 lines and has to be swappable per runtime anyway (Workers uses its own binding).                                                                                                                              |
-| A telemetry SDK                                   | There is no telemetry, by policy. See `docs/PRIVACY.md`.                                                                                                                                                                              |
+| A telemetry SDK                                   | There is no telemetry, by policy. See [PRIVACY.md](PRIVACY.md).                                                                                                                                                                       |
 
 ## Dev dependencies
 

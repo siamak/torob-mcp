@@ -1,8 +1,10 @@
-# torob-mcp — architecture proposal (Phase 1)
+# Architecture
 
-Status: **awaiting approval**. No implementation code is written until this is signed off.
-Everything here follows from `docs/ENDPOINTS.md`; where a design choice is forced by a real
-upstream quirk, the quirk is cited.
+As-built reference for `torob-mcp`. Decisions in §12 match the running code. Upstream quirks
+that force a design choice are cited from [ENDPOINTS.md](ENDPOINTS.md).
+
+[Docs index](README.md) · [Endpoints](ENDPOINTS.md) · [Threat model](THREAT_MODEL.md) ·
+[Contributing](../CONTRIBUTING.md)
 
 ---
 

@@ -1,14 +1,17 @@
-# Torob endpoint recon (Phase 0)
+# Endpoints
 
-Recon date: **2026-09-24**. Probed from a residential **IR** egress with plain `curl`.
-Nothing here is an official or documented API — these are the private JSON endpoints
-`torob.com`'s Next.js web app calls. They can change without notice; every one of them
-is pinned by a fixture in `fixtures/` and must be re-verified when a contract test fails.
+Private JSON endpoints that `torob.com`'s web app calls. Not an official API — they can change
+without notice. Every endpoint is pinned by a fixture in `fixtures/` and must be re-verified when
+a contract test fails.
+
+Recon date: **2026-09-24**, from a residential **IR** egress with plain `curl`.
 
 **Hosts in use:** `api.torob.com` (all JSON), `torob.com` (canonical product/shop URLs only).
 Those two are the entire allowlist. `image.torob.com`, `storage3.torob.com` and
 `assets.torob.com` appear inside responses and are **never fetched** — image URLs are dropped
 before output.
+
+[Docs index](README.md) · [Architecture](ARCHITECTURE.md) · [Privacy](PRIVACY.md)
 
 ---
 
@@ -246,18 +249,17 @@ object — only worth calling if we ever expose coordinates; v1 should not.
 curl -H 'Cookie: deliver_city=712' …list_type=products_in_store_info   # 22 rows → 2 rows, both لار
 ```
 
-So `product_stores(city)` has two possible implementations, and this is a **Phase 1 decision I need
-your call on**:
+So `product_stores(city)` had two possible implementations:
 
 - **(a) Client-side filter** on `shop_name2`. Zero cookies, but wrong: it filters only the 22 rows the
   Tehran-default server chose to return, so a shop in a small city can be invisible.
 - **(b) Send a single derived request header** `Cookie: deliver_city=<validated int>`, with **no cookie
   jar, no persistence, and nothing stored between calls** — the value is computed from the tool's own
-  `city` argument, never from a `set-cookie`. Correct results; the brief's "no cookies" rule is about
-  not carrying _Torob's_ state, which this does not do.
+  `city` argument, never from a `set-cookie`. Correct results; the "no cookies" rule is about not
+  carrying _Torob's_ state, which this does not do.
 
-**My recommendation: (b)**, documented explicitly in `docs/PRIVACY.md` as the one and only header we
-derive. Resolve the name → id via `GET /v4/city/list/?search=<name>` (fixture `city_list.json`;
+**Decision: (b).** Documented in [PRIVACY.md](PRIVACY.md) as the one and only header we derive.
+Resolve the name → id via `GET /v4/city/list/?search=<name>` (fixture `city_list.json`;
 `search=` is the working param, `size=100` works, `id 392` Tehran, `id 712` لار). Also
 `GET /v4/city/most-visited/list/` returns the top 5 cities for a cheap default.
 
@@ -387,12 +389,12 @@ cheerio will not be a dependency.
 
 ---
 
-## 11. Open items for Phase 1
+## 11. Decisions from recon (resolved)
 
-1. **`deliver_city` header** for `product_stores` — option (b) above. Needs your yes/no.
-2. **Jalali → ISO** conversion for `price_chart` labels: tiny in-repo converter vs. a dependency
-   (`jalaali-js`, ~2 KB, zero deps). I lean in-repo to keep `packages/core` dependency-free.
-3. **Persian-digit parsing** of `shop_text` ("در ۱۱ فروشگاه") and `price_text` — lands in `lib/fa.ts`
-   alongside the normalizer, and the `price_text` parse doubles as the unit assertion in contract tests.
-4. **`count` caps at 1200** on broad browses — decide whether to report it as `approx_total`.
-5. **Foreign/cloud egress is untested.** Phase 5.0 gate stands as written.
+| Open item                         | Outcome                                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `deliver_city` for `product_stores` | Option (b): one derived request header, no cookie jar. See [PRIVACY.md](PRIVACY.md).           |
+| Jalali → ISO                      | In-repo converter in `lib/fa.ts`; `jalaali-js` is a devDependency oracle only.                   |
+| Persian-digit parsing             | In `lib/fa.ts`; `price_text` parse doubles as the Toman unit assertion in contract tests.        |
+| `count` caps at 1200              | Surfaced as `approx_total`.                                                                      |
+| Foreign/cloud egress              | Still a Phase 5.0 gate — assume blocked until proven. See [DEPLOY.md](DEPLOY.md).                |

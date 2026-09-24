@@ -20,6 +20,11 @@
 - [ ] zod schema updated
 - [ ] A test asserts the filter **actually narrowed the results** — not merely that the call returned 200
 
+## Docs (if user-facing)
+
+- [ ] README / README.fa.md updated if install, tools, or config changed
+- [ ] `docs/DEPLOY.md` updated if deploy behaviour changed
+
 ## Verification
 
 - [ ] `pnpm check` clean

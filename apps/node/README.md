@@ -6,14 +6,15 @@ right now, and whether the shop can be trusted.
 
 [![CI](https://github.com/siamak/torob-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/siamak/torob-mcp/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/torob-mcp)](https://www.npmjs.com/package/torob-mcp)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/siamak/torob-mcp/blob/main/LICENSE)
+
+[فارسی](https://github.com/siamak/torob-mcp/blob/main/README.fa.md) ·
+[Full docs on GitHub](https://github.com/siamak/torob-mcp#docs)
 
 > **Unofficial.** This project is not affiliated with, endorsed by, or connected to Torob in any
 > way. It is an independent client for the undocumented JSON endpoints torob.com's own website
 > uses. Those can change or stop working without notice. All prices come from Torob and are
 > reported as-is.
-
-[فارسی ↓](#torob-mcp-فارسی)
 
 ---
 
@@ -125,7 +126,8 @@ torob-mcp --http --host 0.0.0.0       # requires TOROB_AUTH_TOKEN
 
 ## Configuration
 
-Everything is optional and validated at startup. See [`.env.example`](.env.example).
+Everything is optional and validated at startup. See
+[`.env.example`](https://github.com/siamak/torob-mcp/blob/main/.env.example).
 
 | Variable                | Default                     | What it does                                                   |
 | ----------------------- | --------------------------- | -------------------------------------------------------------- |
@@ -140,231 +142,30 @@ Everything is optional and validated at startup. See [`.env.example`](.env.examp
 ## Deployment
 
 > **⚠️ Torob blocks many cloud egress IPs.** This is the single most likely reason a deployment
-> fails. Cloudflare Workers, and datacenter ranges belonging to AWS, GCP, Azure, Hetzner, DigitalOcean
-> and others, are frequently blocked or served a challenge page instead of JSON. The server reports
-> this as a `Blocked` error rather than hanging.
->
-> **An Iranian VPS, or a home connection in Iran, is the reliable option.** Everything else is worth
-> testing before you commit to it. Run `pnpm test:live` from the target host to find out in a minute.
+> fails. An Iranian VPS, or a home connection in Iran, is the reliable option. Test with
+> `pnpm test:live` from the target host.
 
-### Docker
+Recipes for Docker, Iranian VPS, Fly.io and Railway:
+[docs/DEPLOY.md](https://github.com/siamak/torob-mcp/blob/main/docs/DEPLOY.md).
 
-The image is built on **`gcr.io/distroless/nodejs22-debian12:nonroot`** — no shell, no package
-manager, runs as uid 65532, works with `--read-only`.
+## Security & privacy
 
-```bash
-docker run --rm -p 3000:3000 \
-  --read-only \
-  -e TOROB_AUTH_TOKEN="$(openssl rand -hex 24)" \
-  ghcr.io/siamak/torob-mcp:latest
-```
+Runs on **your** machine; output lands in an LLM context window. Host allowlist
+(`torob.com` / `api.torob.com` only), prompt-injection sanitization, sponsored listings labelled,
+shop profiles allowlisted. **No telemetry, no cookies, no disk persistence.**
 
-The container binds `0.0.0.0` because a container's loopback isn't reachable from the host, so a
-token is mandatory.
-
-### Iranian VPS (recommended)
-
-```bash
-# On the VPS
-curl -fsSL https://get.docker.com | sh
-docker run -d --name torob-mcp --restart unless-stopped \
-  --read-only -p 127.0.0.1:3000:3000 \
-  -e TOROB_AUTH_TOKEN="$(openssl rand -hex 24)" \
-  ghcr.io/siamak/torob-mcp:latest
-```
-
-Bind to `127.0.0.1` on the host and put nginx or Caddy in front for TLS, rather than exposing 3000
-directly. Providers whose egress is inside Iran work best.
-
-### Fly.io
-
-```toml
-# fly.toml
-app = "your-torob-mcp"
-primary_region = "fra"
-
-[build]
-  image = "ghcr.io/siamak/torob-mcp:latest"
-
-[http_service]
-  internal_port = 3000
-  force_https = true
-  auto_stop_machines = "stop"
-  min_machines_running = 0
-
-[[http_service.checks]]
-  path = "/healthz"
-```
-
-```bash
-fly secrets set TOROB_AUTH_TOKEN="$(openssl rand -hex 24)"
-fly deploy
-```
-
-**Test egress first** — Fly's IPs may be blocked. `fly ssh console` then check `/healthz` and run
-one real query.
-
-### Railway
-
-Point Railway at this repo; it will use the `Dockerfile`. Set `TOROB_AUTH_TOKEN` in the service
-variables and add a healthcheck on `/healthz`. Same caveat: verify egress before relying on it.
-
-### Cloudflare Workers
-
-Not supported yet, and possibly never directly — see the egress warning above. Phase 5 begins with
-a probe that decides whether a Worker can reach Torob at all, or whether it needs a relay with an
-Iranian egress IP.
-
-## Security model
-
-Designed on the assumption that it runs on **your** machine and its output lands in an LLM's
-context window. Full detail in [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md).
-
-- **Host allowlist.** `torob.com` and `api.torob.com` only, re-checked on **every redirect hop**.
-  Product ids are validated as UUIDs before a URL is ever built — there is no path from raw input
-  to a URL.
-- **Prompt-injection hygiene.** Merchant-written titles and notes are third-party text. Control
-  characters, bidi overrides and zero-width characters (except ZWNJ, which is meaningful in
-  Persian) are stripped; fields are truncated; text is returned in labelled data fields. Every tool
-  description tells the model this is third-party data. **This reduces the risk, it does not
-  eliminate it** — the real protection is that this server is entirely read-only.
-- **Sponsored placements are labelled** `sponsored: true`, never hidden.
-- **Shop profiles are an allowlist.** Torob's shop endpoint returns 72 fields including merchant
-  billing internals and personal contact details; about 15 are emitted and the rest dropped.
-- **Resource limits.** Timeouts, a streamed response-size cap, bounded redirects, a byte-capped
-  cache, and composite tools that refuse up front rather than fail halfway.
-- **Supply chain.** Four runtime dependencies. Lockfile committed, install scripts disabled, npm
-  publish with provenance via OIDC, Actions pinned to SHAs, CodeQL + gitleaks + Scorecard + Trivy,
-  SBOM per release, cosign-signed image.
-
-## What is sent to Torob
-
-Only what a query needs: your **search text** (normalized), the **ids and filters** you asked for,
-page and size, our User-Agent, and unavoidably your **IP address**. One exception carries a derived
-`deliver_city` header: `product_stores` with a `city` argument, because Torob filters shops by
-cookie rather than query parameter.
-
-**No telemetry, no analytics, no disk persistence, no cookie jar.** Torob's `set-cookie` responses
-are discarded on every response. The cache is in memory and dies with the process. Full detail in
-[`docs/PRIVACY.md`](docs/PRIVACY.md).
-
-## Development
-
-```bash
-pnpm install --frozen-lockfile
-pnpm check          # oxlint + oxfmt + typecheck
-pnpm test           # 190 tests, offline and deterministic
-pnpm test:live      # opt-in, hits the real API
-pnpm build
-pnpm inspect        # MCP Inspector, interactive
-pnpm inspect:cli    # Inspector CLI checks
-```
-
-Monorepo: `packages/core` is runtime-agnostic (no `node:*`, everything injected through a `Runtime`
-interface) so the same code can run under Cloudflare Workers later; `apps/node` is the published
-package. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- [Threat model](https://github.com/siamak/torob-mcp/blob/main/docs/THREAT_MODEL.md)
+- [Privacy](https://github.com/siamak/torob-mcp/blob/main/docs/PRIVACY.md)
+- [Security policy](https://github.com/siamak/torob-mcp/blob/main/SECURITY.md)
 
 ## Docs
 
-[Endpoints](docs/ENDPOINTS.md) · [Architecture](docs/ARCHITECTURE.md) ·
-[Threat model](docs/THREAT_MODEL.md) · [Privacy](docs/PRIVACY.md) ·
-[Dependencies](docs/DEPENDENCIES.md) · [Security policy](SECURITY.md)
+[Index](https://github.com/siamak/torob-mcp/blob/main/docs/README.md) ·
+[Endpoints](https://github.com/siamak/torob-mcp/blob/main/docs/ENDPOINTS.md) ·
+[Architecture](https://github.com/siamak/torob-mcp/blob/main/docs/ARCHITECTURE.md) ·
+[Deploy](https://github.com/siamak/torob-mcp/blob/main/docs/DEPLOY.md) ·
+[Contributing](https://github.com/siamak/torob-mcp/blob/main/CONTRIBUTING.md)
 
 ## License
 
 MIT © Siamak Mokhtari
-
----
-
-<div dir="rtl">
-
-# torob-mcp (فارسی)
-
-**سرور MCP برای [ترب](https://torob.com)، موتور مقایسه قیمت ایران.**
-از دستیار هوش مصنوعی‌تان بپرسید یک کالا چند است، ارزان‌ترین فروشنده کیست، الان وقت خوبی برای خرید
-هست یا نه، و آیا فروشگاه قابل اعتماد است.
-
-> **غیررسمی.** این پروژه هیچ وابستگی، تأییدیه یا ارتباطی با ترب ندارد. یک کلاینت مستقل برای همان
-> endpointهای JSON است که وب‌سایت ترب خودش استفاده می‌کند. این endpointها ممکن است بدون اطلاع قبلی
-> تغییر کنند یا از کار بیفتند. تمام قیمت‌ها از ترب می‌آید و همان‌طور که هست گزارش می‌شود.
-
-## چه کاری انجام می‌دهد
-
-پانزده ابزار برای جست‌وجو، قیمت، فروشنده‌ها، تاریخچه قیمت، فروشگاه‌های حضوری و اعتبار فروشگاه.
-قیمت‌ها به **تومان** نرمال‌سازی می‌شوند. جست‌وجو با فارسی، انگلیسی و فینگلیش کار می‌کند — مثلاً
-`ayfon 13` همان چیزی را پیدا می‌کند که انتظار دارید.
-
-## نصب
-
-به **Node 22 یا بالاتر** نیاز دارد.
-
-**Claude Code:**
-
-</div>
-
-```bash
-claude mcp add torob -- npx -y torob-mcp
-```
-
-<div dir="rtl">
-
-**Claude Desktop** و **Cursor:** همان پیکربندی JSON بخش انگلیسی را استفاده کنید.
-
-## ابزارها
-
-| ابزار                 | کاربرد                                                                 |
-| --------------------- | ---------------------------------------------------------------------- |
-| `search_torob`        | جست‌وجو با فیلتر دسته، برند، بازه قیمت و مرتب‌سازی                     |
-| `torob_suggest`       | تبدیل عبارت مبهم، غلط املایی یا فینگلیش به عبارت قابل جست‌وجو          |
-| `product_details`     | بازه قیمت، تعداد فروشنده، مشخصات فنی، مسیر دسته‌بندی                   |
-| `product_sellers`     | فروشنده‌ها به ترتیب ارزان‌ترینِ قابل‌اعتماد، همراه با نشانه‌های اعتبار |
-| `product_price_chart` | حدود یک سال قیمت هفتگی و داوری اینکه قیمت فعلی خوب است یا نه           |
-| `product_variants`    | نسخه‌های دیگر (حافظه، رم، ریجن) با قیمت هرکدام                         |
-| `similar_products`    | فهرست «مشابه» خود ترب                                                  |
-| `product_stores`      | فروشگاه‌های حضوری، با امکان فیلتر بر اساس شهر                          |
-| `shop_profile`        | شهر، امتیاز، وضعیت نماد اعتماد و سابقه فروشگاه در ترب                  |
-| `browse_category`     | مرور یک دسته‌بندی کامل                                                 |
-| `search_filters`      | یافتن شناسه دسته‌بندی، شناسه برند و بازه قیمت                          |
-| `compare_products`    | مقایسه ۲ تا ۵ محصول و نمایش فقط تفاوت‌ها                               |
-| `find_best_value`     | «بهترین X زیر Y تومان»                                                 |
-| `get_products_batch`  | کارت اطلاعات تا ۱۰ محصول به‌صورت یکجا                                  |
-| `product_url`         | ساخت لینک قابل اشتراک ترب                                              |
-
-## نمونه پرسش‌ها
-
-- «قیمت گوشی سامسونگ A55 چنده؟»
-- «بهترین هدفون بی‌سیم زیر ۲ میلیون تومان»
-- «الان ۱۱۳ میلیون برای آیفون ۱۳ پرو کارکرده قیمت خوبیه؟»
-- «کدوم فروشگاه‌های شیراز این رو موجود دارن؟»
-- «این فروشنده قابل اعتماده؟ خیلی از بقیه ارزون‌تره.»
-
-چون قیمت‌ها مدام تغییر می‌کنند، بهتر است از دستیار بخواهید لینک محصول را هم بدهد.
-
-## هشدار مهم درباره استقرار
-
-**ترب بسیاری از IPهای سرورهای ابری را مسدود می‌کند.** Cloudflare Workers و محدوده‌های دیتاسنتری
-AWS، GCP، Azure، Hetzner و DigitalOcean اغلب مسدود می‌شوند یا به‌جای JSON صفحه چالش دریافت می‌کنند.
-سرور این وضعیت را به‌صورت خطای `Blocked` گزارش می‌کند و معلق نمی‌ماند.
-
-**یک سرور مجازی ایرانی یا اینترنت خانگی در ایران گزینه مطمئن است.** پیش از تکیه بر هر گزینه دیگری،
-با اجرای `pnpm test:live` روی همان سرور آن را آزمایش کنید.
-
-## مدل امنیتی
-
-- فقط `torob.com` و `api.torob.com` — این فهرست در هر بار ریدایرکت دوباره بررسی می‌شود.
-- متن نوشته‌شده توسط فروشنده‌ها داده شخص ثالث است: کاراکترهای کنترلی، بازنویسی جهت متن (bidi) و
-  کاراکترهای بدون عرض حذف می‌شوند — به‌جز نیم‌فاصله که در فارسی معنادار است و حفظ می‌شود.
-- آگهی‌های تبلیغاتی با `sponsored: true` مشخص می‌شوند و پنهان نمی‌مانند.
-- **بدون تله‌متری، بدون کوکی، بدون ذخیره روی دیسک.** کش فقط در حافظه است و با بسته شدن برنامه
-  از بین می‌رود.
-
-## چه چیزی به ترب فرستاده می‌شود
-
-فقط متن جست‌وجو (پس از نرمال‌سازی)، شناسه‌ها و فیلترهایی که خواسته‌اید، شماره صفحه، User-Agent ما،
-و ناگزیر آدرس IP شما. جزئیات کامل در [`docs/PRIVACY.md`](docs/PRIVACY.md).
-
-## مجوز
-
-MIT © سیامک مختاری
-
-</div>

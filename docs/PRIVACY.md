@@ -3,6 +3,10 @@
 What this server sends, stores, and tells anyone. Short version: it talks to Torob and to nobody
 else, and it keeps nothing.
 
+[Docs index](README.md) · [Threat model](THREAT_MODEL.md) · [Security policy](../SECURITY.md)
+
+---
+
 ## What reaches Torob
 
 Only what a tool call needs, to `api.torob.com` or `torob.com` over HTTPS:
@@ -23,7 +27,7 @@ converted to ASCII, whitespace collapsed. What Torob sees is a cleaned-up versio
 ### About that one header
 
 Torob filters physical shops by city through a `deliver_city` cookie, not a query parameter — the
-parameters that look like they should work are silently ignored (`docs/ENDPOINTS.md` §5). So
+parameters that look like they should work are silently ignored ([ENDPOINTS.md](ENDPOINTS.md) §5). So
 `product_stores({city})` resolves the name to an id and sends that one header.
 
 It is a request parameter that upstream happens to spell as a cookie. Specifically:
@@ -70,7 +74,7 @@ is dropped, so a field Torob adds later is invisible by default rather than leak
 
 You become the operator of a service other people can reach, and their queries pass through your
 machine to Torob under your IP. Bind loopback unless you mean otherwise, require a token, and see
-[`docs/THREAT_MODEL.md`](THREAT_MODEL.md).
+[THREAT_MODEL.md](THREAT_MODEL.md).
 
 ## Torob's own privacy practices
 
