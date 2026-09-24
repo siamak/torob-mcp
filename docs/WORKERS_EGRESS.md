@@ -114,7 +114,11 @@ Worker will keep writing samples to KV. Before locking the mode:
 | **direct** | Skip 5.1. Implement 5.2 Worker with `Runtime.fetch` → Torob. Keep relay design in reserve. |
 | **relay**  | Build `apps/relay` (5.1) on Iranian egress + Tunnel, then Worker signed fetch (5.2).       |
 
-**Decision (fill in):** `_pending — awaiting 48h more samples / maintainer call_`
+**Decision (fill in):** `direct` — locked 2026-09-24 after day-1 WAW/MCI/EWR clean samples
+and a live `search_torob` call through the production Worker
+(`https://torob-mcp.s-mokhtari75.workers.dev/mcp`).
+
+Revisit if staging smoke tests start returning `Blocked`.
 
 ---
 

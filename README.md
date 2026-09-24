@@ -149,6 +149,7 @@ Everything is optional and validated at startup. See [`.env.example`](.env.examp
 
 Full Docker, Iranian VPS, Fly.io and Railway recipes: [`docs/DEPLOY.md`](docs/DEPLOY.md).
 Workers egress probe (Phase 5.0 gate): [`docs/WORKERS_EGRESS.md`](docs/WORKERS_EGRESS.md).
+Workers deploy guide: [`docs/DEPLOY_WORKERS.md`](docs/DEPLOY_WORKERS.md).
 
 ## Security model
 

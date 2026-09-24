@@ -164,10 +164,8 @@ Same caveat: confirm egress before relying on it.
 
 ## Cloudflare Workers
 
-Phase 5.0 probe is live; results and the direct-vs-relay decision live in
-[`docs/WORKERS_EGRESS.md`](WORKERS_EGRESS.md). Do not deploy a production Worker until that file
-names a mode. If the mode is `relay`, upstream calls go through an Iranian-egress relay behind
-Cloudflare Tunnel — not through Workers egress.
+Supported in **direct** upstream mode. See [`DEPLOY_WORKERS.md`](DEPLOY_WORKERS.md) and the
+egress gate [`WORKERS_EGRESS.md`](WORKERS_EGRESS.md). Auth is always required.
 
 ## Operating notes
 
