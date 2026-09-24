@@ -1,0 +1,10 @@
+# Default owner for everything.
+*                       @siamak
+
+# Security-critical surfaces: always review these deliberately.
+/packages/core/src/torob/client.ts      @siamak
+/packages/core/src/torob/endpoints.ts   @siamak
+/packages/core/src/lib/sanitize.ts      @siamak
+/apps/node/src/transports/              @siamak
+/.github/workflows/                     @siamak
+/docs/THREAT_MODEL.md                   @siamak

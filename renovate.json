@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":semanticCommits"],
+  "schedule": ["before 6am on monday"],
+  "timezone": "Asia/Tehran",
+  "prConcurrentLimit": 3,
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "description": "Group dev tooling so the weekly noise is one PR, reviewed together.",
+      "matchDepTypes": ["devDependencies"],
+      "groupName": "dev tooling"
+    },
+    {
+      "description": "Runtime deps are few and load-bearing: never grouped, never auto-merged.",
+      "matchDepTypes": ["dependencies"],
+      "groupName": null,
+      "automerge": false
+    },
+    {
+      "description": "Actions are pinned to SHAs; Renovate keeps the SHA and the comment in step.",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions",
+      "pinDigests": true
+    }
+  ],
+  "vulnerabilityAlerts": { "labels": ["security"], "schedule": ["at any time"] },
+  "lockFileMaintenance": { "enabled": true, "schedule": ["before 6am on the first day of the month"] }
+}
