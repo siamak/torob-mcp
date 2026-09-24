@@ -206,5 +206,8 @@ git push && git push --tags
 ```
 
 npm publishes with provenance through GitHub OIDC trusted publishing — there is no long-lived npm
-token, and publishing from a laptop is not the supported path. The image is scanned with Trivy and
-signed with cosign keyless in the same workflow.
+token, and publishing from a laptop is not the supported path. On [npmjs.com →
+`torob-mcp` → Trusted Publisher](https://www.npmjs.com/package/torob-mcp/access), the GitHub Actions
+publisher must point at this repo and the workflow filename `release.yml` (exact match, including
+extension). Without that, `pnpm publish` fails with a misleading `404 Not Found` on the PUT. The
+image is scanned with Trivy and signed with cosign keyless in the same workflow.

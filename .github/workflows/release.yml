@@ -37,10 +37,10 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
-      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+      # v7+ does not inject a dummy NODE_AUTH_TOKEN, which blocks npm OIDC trusted publishing.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
-          cache: pnpm
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm build
@@ -48,8 +48,12 @@ jobs:
       - name: Generate CycloneDX SBOM
         run: pnpm dlx @cyclonedx/cyclonedx-npm --output-file sbom.json --omit dev
 
+      # Trusted publishing needs npm >= 11.5.1 (Node 22 ships an older npm).
       - name: Publish with provenance
-        run: pnpm publish --filter torob-mcp --access public --provenance --no-git-checks
+        run: |
+          npm install -g npm@latest
+          unset NODE_AUTH_TOKEN
+          pnpm publish --filter torob-mcp --access public --provenance --no-git-checks
 
       - name: GitHub release with SBOM
         uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # v2.0.8
@@ -82,8 +86,9 @@ jobs:
           load: true
           tags: torob-mcp:scan
 
+      # v0.29.0 pulled deleted setup-trivy@v0.2.2 (post-compromise yank). v0.36.0 pins setup-trivy@v0.2.6.
       - name: Trivy scan
-        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947b394f2dd8c87dbb0 # v0.29.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: torob-mcp:scan
           exit-code: '1'
