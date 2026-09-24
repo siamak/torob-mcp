@@ -1,41 +1,57 @@
 # syntax=docker/dockerfile:1
 
-# Build stage: install with the lockfile and no install scripts, then bundle.
-FROM node:22-alpine AS build
+# ---------------------------------------------------------------------------
+# Base image: gcr.io/distroless/nodejs22-debian12:nonroot
+#
+# Chosen over node:22-alpine deliberately. Distroless carries no shell, no package manager and no
+# busybox, so a command-injection or dependency foothold has nothing to pivot with. The `:nonroot`
+# tag runs as uid 65532 by default rather than relying on a USER line being correct.
+#
+# The cost is that debugging inside the container is not possible - there is no `docker exec sh`.
+# That is the right trade for a server whose whole job is fetching untrusted third-party content on
+# someone else's machine. Use `:debug` tags locally if you need a shell.
+# ---------------------------------------------------------------------------
+
+# Build stage keeps a full toolchain; none of it reaches the runtime image.
+FROM node:22-bookworm-slim AS build
 WORKDIR /app
 
 RUN corepack enable
 
+# Copy manifests first so the dependency layer caches independently of source.
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/core/package.json packages/core/
 COPY apps/node/package.json apps/node/
+
+# --ignore-scripts matches CI: no package may run code at install time.
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY . .
 RUN pnpm build
 
-# Runtime stage: only the bundle and production dependencies.
-FROM node:22-alpine AS runtime
+# ---------------------------------------------------------------------------
+FROM gcr.io/distroless/nodejs22-debian12:nonroot AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production \
     TOROB_LOG_LEVEL=info
 
-# tini reaps zombies and forwards signals, so the container stops cleanly.
-RUN apk add --no-cache tini
+# The bundle is self-contained: tsdown inlines @torob-mcp/core, so no node_modules is copied.
+COPY --from=build /app/apps/node/dist/bin.mjs ./bin.mjs
 
-COPY --from=build /app/apps/node/dist ./dist
-
-# node:alpine ships an unprivileged `node` user; the image never runs as root.
-USER node
-
-# Works with --read-only: nothing is written to disk, and the cache is in memory.
+# Compatible with `--read-only`: nothing is written to disk, the cache lives in memory, and there
+# is no cookie jar or state directory. Run with `--read-only --tmpfs /tmp` if you want belt and
+# braces.
 EXPOSE 3000
 
-# Binds all interfaces because a container's loopback is not reachable from outside; auth is
-# therefore required. Set TOROB_AUTH_TOKEN, or pass --insecure deliberately.
+# Exec form, because distroless has no shell to parse a string CMD.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD node -e "fetch('http://127.0.0.1:3000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+  CMD ["/nodejs/bin/node", "-e", "fetch('http://127.0.0.1:3000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
 
-ENTRYPOINT ["/sbin/tini", "--", "node", "/app/dist/bin.mjs"]
-CMD ["--http", "--host", "0.0.0.0", "--port", "3000"]
+# The distroless entrypoint is already node, so only the script and flags are given here.
+#
+# Binding 0.0.0.0 is required for the port to be reachable from outside the container - a
+# container's loopback is not the host's. That means authentication is mandatory: set
+# TOROB_AUTH_TOKEN, or the server refuses to start. Pass --insecure only if you genuinely intend an
+# open server.
+CMD ["/app/bin.mjs", "--http", "--host", "0.0.0.0", "--port", "3000"]

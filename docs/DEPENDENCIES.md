@@ -39,8 +39,51 @@ workerd.
 
 ## Dev dependencies
 
-`typescript`, `vitest`, `@vitest/coverage-v8`, `fast-check`, `jalaali-js` (test oracle), `oxlint`,
-`oxfmt`, `tsdown`, `@types/node`. None of these ship.
+`typescript`, `vitest`, `@vitest/coverage-v8`, `fast-check`, `jalaali-js` (the Jalali oracle),
+`oxlint`, `oxfmt` (see the section above), `tsdown`, `@types/node`. None of these ship.
+
+## Toolchain: oxlint + oxfmt, not Biome
+
+The build brief specifies Biome. This project uses **`oxlint` 1.85 + `oxfmt`** instead. That is a
+deliberate amendment, decided by the maintainer, and it is recorded here rather than left to be
+discovered in `package.json`.
+
+**What the switch buys**
+
+- Both are Rust, both are fast enough that `pnpm check` is not a thing you avoid running. On a tree
+  this size the difference between them is not the deciding factor.
+- `oxlint` covers what this project actually needs from a linter: the `correctness` category,
+  `typescript/no-explicit-any`, and — the one that matters architecturally —
+  `no-restricted-imports`, which is what stops `node:*`, `undici`, `pino` and `lru-cache` from
+  leaking into `packages/core/src` and quietly breaking the Workers build in Phase 5.
+- Per-directory `overrides`, which is how that ban is scoped to `src` without also blocking tests
+  from reading fixtures off disk.
+
+**What it costs, stated plainly**
+
+- `oxfmt` is **0.70.0 — pre-1.0**, against Biome's 2.5.14. For a project that ships to other
+  people's machines that is a real asymmetry, and it is the one argument that genuinely favours
+  Biome. It is accepted knowingly: a formatter is a development-time tool, it produces no artifact
+  that reaches a user, and a regression in it is visible in `git diff` rather than silent.
+- Biome's rule catalogue is larger. Nothing currently in use is missing from `oxlint`; if that
+  changes, the lint config is small and portable.
+
+**What does not change either way**
+
+The formatter is not a security control, and neither tool is trusted to be one:
+
+- **Autofixes marked unsafe or dangerous are banned** in every script and in CI. This is not
+  theoretical — a Biome `--unsafe` fix rewrote `\uXXXX` escapes into **literal control and bidi
+  characters** inside `sanitize.ts` and `fa.ts`, the two files whose entire job is removing those
+  characters, where no reviewer would have seen them.
+- `packages/core/test/source-hygiene.test.ts` fails the build on any literal bidi, control or
+  non-ZWNJ zero-width code point anywhere under `packages/` or `apps/`. That guard is the actual
+  control; the linter choice sits underneath it.
+
+**Always `pnpm exec`, never `npx`.** `npx biome` resolves to an unrelated package on the npm
+registry — a `biome` v10.x that crashes on any multi-file run — rather than `@biomejs/biome`. The
+same name-collision hazard applies to any bare tool name, so every script in this repo uses
+`pnpm exec`, which resolves from the lockfile.
 
 ## Supply-chain posture
 
