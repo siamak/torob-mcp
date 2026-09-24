@@ -1,11 +1,15 @@
 # syntax=docker/dockerfile:1
 
 # ---------------------------------------------------------------------------
-# Base image: gcr.io/distroless/nodejs22-debian12:nonroot
+# Base image: gcr.io/distroless/nodejs22-debian13:nonroot
 #
 # Chosen over node:22-alpine deliberately. Distroless carries no shell, no package manager and no
 # busybox, so a command-injection or dependency foothold has nothing to pivot with. The `:nonroot`
 # tag runs as uid 65532 by default rather than relying on a USER line being correct.
+#
+# debian13 (not debian12): Google stopped rebuilding nodejs22-debian12 after openssl 3.0.18, so
+# that family still fails Trivy on CRITICAL/HIGH libssl3 CVEs. debian13 ships openssl 3.5.x and
+# a current Node 22 — same distroless contract, patched base.
 #
 # The cost is that debugging inside the container is not possible - there is no `docker exec sh`.
 # That is the right trade for a server whose whole job is fetching untrusted third-party content on
@@ -35,7 +39,7 @@ RUN pnpm build
 RUN pnpm deploy --filter torob-mcp --prod --legacy /deploy
 
 # ---------------------------------------------------------------------------
-FROM gcr.io/distroless/nodejs22-debian12:nonroot AS runtime
+FROM gcr.io/distroless/nodejs22-debian13:nonroot AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production \

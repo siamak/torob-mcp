@@ -63,7 +63,7 @@ you want a shared remote server.
 
 ## Docker
 
-The image is **`gcr.io/distroless/nodejs22-debian12:nonroot`**: no shell, no package manager, runs
+The image is **`gcr.io/distroless/nodejs22-debian13:nonroot`**: no shell, no package manager, runs
 as uid 65532, compatible with a read-only filesystem.
 
 ```bash
