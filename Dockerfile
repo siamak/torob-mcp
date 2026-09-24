@@ -60,4 +60,8 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
 # container's loopback is not the host's. That means authentication is mandatory: set
 # TOROB_AUTH_TOKEN, or the server refuses to start. Pass --insecure only if you genuinely intend an
 # open server.
-CMD ["/app/dist/bin.mjs", "--http", "--host", "0.0.0.0", "--port", "3000"]
+#
+# No `--port` here: platforms like Railway inject PORT, and distroless has no shell to expand
+# `$PORT`. The binary reads PORT (default 3000) itself. HEALTHCHECK below assumes 3000 for local
+# `docker run`; override the platform healthcheck if you set a different PORT.
+CMD ["/app/dist/bin.mjs", "--http", "--host", "0.0.0.0"]

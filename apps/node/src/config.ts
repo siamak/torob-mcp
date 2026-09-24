@@ -72,3 +72,19 @@ export function loadEnv(source: NodeJS.ProcessEnv): Env {
     `Invalid configuration:\n${lines.join('\n')}\n\nSee .env.example for valid values.`,
   );
 }
+
+/**
+ * HTTP listen port: `--port` wins, then the platform `PORT` env (Railway / Fly / Heroku), then 3000.
+ * Distroless images cannot expand `$PORT` in CMD, so the binary must read the env itself.
+ */
+export function resolveHttpPort(
+  cliPort: string | undefined,
+  envPort: string | undefined,
+): number {
+  const raw = cliPort ?? (envPort !== undefined && envPort.trim() !== '' ? envPort : undefined) ?? '3000';
+  const port = Number(raw);
+  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
+    throw new Error(`--port must be a number between 1 and 65535, got ${String(raw)}`);
+  }
+  return port;
+}

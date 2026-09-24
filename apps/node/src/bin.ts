@@ -8,7 +8,7 @@
 import process from 'node:process';
 import { parseArgs } from 'node:util';
 import { SERVER_VERSION } from '@torob-mcp/core';
-import { loadEnv } from './config.ts';
+import { loadEnv, resolveHttpPort } from './config.ts';
 import { createLogger, createRuntime } from './runtime.ts';
 import { startHttp } from './transports/http.ts';
 import { startStdio } from './transports/stdio.ts';
@@ -22,7 +22,7 @@ const USAGE = `torob-mcp ${SERVER_VERSION} - unofficial MCP server for torob.com
 
 Flags:
   --http             enable the HTTP transport instead of stdio
-  --port <n>         HTTP port (default 3000)
+  --port <n>         HTTP port (default: PORT env, or 3000)
   --host <addr>      HTTP bind address (default 127.0.0.1)
   --insecure         allow a non-loopback bind with no auth token. Do not use this on a
                      machine reachable from the internet.
@@ -64,10 +64,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const port = values.port === undefined ? 3000 : Number(values.port);
-  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
-    throw new Error(`--port must be a number between 1 and 65535, got ${String(values.port)}`);
-  }
+  const port = resolveHttpPort(values.port, process.env.PORT);
 
   const server = startHttp(runtime, log, {
     host: values.host ?? '127.0.0.1',
