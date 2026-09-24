@@ -29,6 +29,11 @@ RUN pnpm install --frozen-lockfile --ignore-scripts
 COPY . .
 RUN pnpm build
 
+# `pnpm deploy` produces a self-contained directory with only production dependencies, which is
+# what the runtime stage needs: the bundle inlines @torob-mcp/core but keeps zod, the MCP SDK,
+# pino and lru-cache external, so node_modules must be present.
+RUN pnpm deploy --filter torob-mcp --prod --legacy /deploy
+
 # ---------------------------------------------------------------------------
 FROM gcr.io/distroless/nodejs22-debian12:nonroot AS runtime
 WORKDIR /app
@@ -36,8 +41,9 @@ WORKDIR /app
 ENV NODE_ENV=production \
     TOROB_LOG_LEVEL=info
 
-# The bundle is self-contained: tsdown inlines @torob-mcp/core, so no node_modules is copied.
-COPY --from=build /app/apps/node/dist/bin.mjs ./bin.mjs
+COPY --from=build /deploy/dist ./dist
+COPY --from=build /deploy/node_modules ./node_modules
+COPY --from=build /deploy/package.json ./package.json
 
 # Compatible with `--read-only`: nothing is written to disk, the cache lives in memory, and there
 # is no cookie jar or state directory. Run with `--read-only --tmpfs /tmp` if you want belt and
@@ -54,4 +60,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
 # container's loopback is not the host's. That means authentication is mandatory: set
 # TOROB_AUTH_TOKEN, or the server refuses to start. Pass --insecure only if you genuinely intend an
 # open server.
-CMD ["/app/bin.mjs", "--http", "--host", "0.0.0.0", "--port", "3000"]
+CMD ["/app/dist/bin.mjs", "--http", "--host", "0.0.0.0", "--port", "3000"]
