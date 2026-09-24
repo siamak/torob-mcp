@@ -391,10 +391,10 @@ cheerio will not be a dependency.
 
 ## 11. Decisions from recon (resolved)
 
-| Open item                         | Outcome                                                                                          |
-| --------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `deliver_city` for `product_stores` | Option (b): one derived request header, no cookie jar. See [PRIVACY.md](PRIVACY.md).           |
-| Jalali → ISO                      | In-repo converter in `lib/fa.ts`; `jalaali-js` is a devDependency oracle only.                   |
-| Persian-digit parsing             | In `lib/fa.ts`; `price_text` parse doubles as the Toman unit assertion in contract tests.        |
-| `count` caps at 1200              | Surfaced as `approx_total`.                                                                      |
-| Foreign/cloud egress              | Still a Phase 5.0 gate — assume blocked until proven. See [DEPLOY.md](DEPLOY.md).                |
+| Open item                           | Outcome                                                                                   |
+| ----------------------------------- | ----------------------------------------------------------------------------------------- |
+| `deliver_city` for `product_stores` | Option (b): one derived request header, no cookie jar. See [PRIVACY.md](PRIVACY.md).      |
+| Jalali → ISO                        | In-repo converter in `lib/fa.ts`; `jalaali-js` is a devDependency oracle only.            |
+| Persian-digit parsing               | In `lib/fa.ts`; `price_text` parse doubles as the Toman unit assertion in contract tests. |
+| `count` caps at 1200                | Surfaced as `approx_total`.                                                               |
+| Foreign/cloud egress                | Still a Phase 5.0 gate — assume blocked until proven. See [DEPLOY.md](DEPLOY.md).         |

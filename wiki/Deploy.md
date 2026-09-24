@@ -7,12 +7,12 @@
 Torob blocks many datacenter IP ranges. A blocked host gets an HTML challenge instead of JSON;
 `torob-mcp` reports that as `Blocked` rather than hanging.
 
-| Where | Expectation |
-| --- | --- |
-| Home connection in Iran | Works |
-| VPS with Iranian egress | Works — recommended for production |
-| Foreign VPS / AWS / GCP / Azure / Fly / Railway | Test first; often blocked |
-| Cloudflare Workers | Assume blocked until proven otherwise |
+| Where                                           | Expectation                           |
+| ----------------------------------------------- | ------------------------------------- |
+| Home connection in Iran                         | Works                                 |
+| VPS with Iranian egress                         | Works — recommended for production    |
+| Foreign VPS / AWS / GCP / Azure / Fly / Railway | Test first; often blocked             |
+| Cloudflare Workers                              | Assume blocked until proven otherwise |
 
 **Test before you commit**, from the target host:
 

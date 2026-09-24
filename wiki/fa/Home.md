@@ -10,14 +10,14 @@
 
 ## از کجا شروع کنم؟
 
-| می‌خواهم… | صفحه |
-| --- | --- |
-| نصب کنم | [شروع کار](https://github.com/siamak/torob-mcp/blob/main/wiki/Getting-Started.md) |
-| ابزارها را ببینم | [ابزارها](https://github.com/siamak/torob-mcp/blob/main/wiki/Tools.md) |
-| نمونه پرسش | [دستورها](https://github.com/siamak/torob-mcp/blob/main/wiki/Recipes.md) |
-| استقرار ریموت | [استقرار](https://github.com/siamak/torob-mcp/blob/main/wiki/Deploy.md) — اول هشدار egress را بخوانید |
-| حریم خصوصی | [حریم خصوصی](https://github.com/siamak/torob-mcp/blob/main/wiki/Privacy.md) |
-| README فارسی کامل | [README.fa.md](https://github.com/siamak/torob-mcp/blob/main/README.fa.md) |
+| می‌خواهم…         | صفحه                                                                                                  |
+| ----------------- | ----------------------------------------------------------------------------------------------------- |
+| نصب کنم           | [شروع کار](https://github.com/siamak/torob-mcp/blob/main/wiki/Getting-Started.md)                     |
+| ابزارها را ببینم  | [ابزارها](https://github.com/siamak/torob-mcp/blob/main/wiki/Tools.md)                                |
+| نمونه پرسش        | [دستورها](https://github.com/siamak/torob-mcp/blob/main/wiki/Recipes.md)                              |
+| استقرار ریموت     | [استقرار](https://github.com/siamak/torob-mcp/blob/main/wiki/Deploy.md) — اول هشدار egress را بخوانید |
+| حریم خصوصی        | [حریم خصوصی](https://github.com/siamak/torob-mcp/blob/main/wiki/Privacy.md)                           |
+| README فارسی کامل | [README.fa.md](https://github.com/siamak/torob-mcp/blob/main/README.fa.md)                            |
 
 ## نصب یک‌خطی
 

@@ -8,15 +8,15 @@ Unofficial MCP server for [torob.com](https://torob.com) — ask an assistant wh
 
 ## Start here
 
-| I want to… | Page |
-| --- | --- |
-| Install it | [Getting started](Getting-Started) |
-| See every tool | [Tools](Tools) |
-| Copy example prompts | [Recipes](Recipes) |
-| Deploy remotely | [Deploy](Deploy) — **read the egress warning first** |
-| Know what Torob receives | [Privacy](Privacy) |
-| Contribute | [Contributing](Contributing) |
-| Dig into internals | [Deep docs](Deep-Docs) |
+| I want to…               | Page                                                 |
+| ------------------------ | ---------------------------------------------------- |
+| Install it               | [Getting started](Getting-Started)                   |
+| See every tool           | [Tools](Tools)                                       |
+| Copy example prompts     | [Recipes](Recipes)                                   |
+| Deploy remotely          | [Deploy](Deploy) — **read the egress warning first** |
+| Know what Torob receives | [Privacy](Privacy)                                   |
+| Contribute               | [Contributing](Contributing)                         |
+| Dig into internals       | [Deep docs](Deep-Docs)                               |
 
 ## One-liner install
 

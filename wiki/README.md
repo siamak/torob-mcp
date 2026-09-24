@@ -2,17 +2,17 @@
 
 User-facing guides for torob-mcp. Canonical copy lives here so PRs can review it with the code.
 
-| Page | Audience |
-| --- | --- |
-| [Home.md](Home.md) | Map of the wiki |
-| [fa/Home.md](fa/Home.md) | Persian home |
+| Page                                     | Audience                        |
+| ---------------------------------------- | ------------------------------- |
+| [Home.md](Home.md)                       | Map of the wiki                 |
+| [fa/Home.md](fa/Home.md)                 | Persian home                    |
 | [Getting-Started.md](Getting-Started.md) | Install (Claude / Cursor / npx) |
-| [Tools.md](Tools.md) | All fifteen tools |
-| [Recipes.md](Recipes.md) | Example prompts |
-| [Deploy.md](Deploy.md) | Egress warning + short recipes |
-| [Privacy.md](Privacy.md) | What reaches Torob |
-| [Contributing.md](Contributing.md) | Contributor quickstart |
-| [Deep-Docs.md](Deep-Docs.md) | Links into `docs/` |
+| [Tools.md](Tools.md)                     | All fifteen tools               |
+| [Recipes.md](Recipes.md)                 | Example prompts                 |
+| [Deploy.md](Deploy.md)                   | Egress warning + short recipes  |
+| [Privacy.md](Privacy.md)                 | What reaches Torob              |
+| [Contributing.md](Contributing.md)       | Contributor quickstart          |
+| [Deep-Docs.md](Deep-Docs.md)             | Links into `docs/`              |
 
 `_Sidebar.md` and `_Footer.md` are for the [GitHub Wiki](https://github.com/siamak/torob-mcp/wiki) when published.
 
