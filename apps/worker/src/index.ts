@@ -6,11 +6,7 @@
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import {
-  registerTools,
-  SERVER_NAME,
-  SERVER_VERSION,
-} from '@torob-mcp/core';
+import { registerTools, SERVER_NAME, SERVER_VERSION } from '@torob-mcp/core';
 import { createLegacyMcpHandler } from 'agents/mcp';
 import { bearerFrom, originAllowed, tokenMatches } from './auth.ts';
 import { loadConfig, type WorkerBindings } from './config.ts';

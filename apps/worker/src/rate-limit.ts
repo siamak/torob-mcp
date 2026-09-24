@@ -63,10 +63,7 @@ export function createUpstreamLimiter(ratePerSec: number, concurrency: number): 
 }
 
 /** Edge rate limit keyed by bearer token fingerprint or client IP. */
-export async function edgeRateLimit(
-  binding: RateLimit | undefined,
-  key: string,
-): Promise<boolean> {
+export async function edgeRateLimit(binding: RateLimit | undefined, key: string): Promise<boolean> {
   if (binding === undefined) return false;
   try {
     const { success } = await binding.limit({ key });

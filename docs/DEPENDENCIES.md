@@ -32,8 +32,8 @@ workerd.
 
 ### `apps/worker` — agents SDK only
 
-| Package  | Why |
-| -------- | --- |
+| Package  | Why                                                                                                                                                |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `agents` | `createLegacyMcpHandler` / WorkerTransport for Streamable HTTP on Workers. Requires `nodejs_compat` on the Worker; core still imports no `node:*`. |
 
 Secrets and bindings (KV, rate limit, bearer token) are documented in [`DEPLOY_WORKERS.md`](DEPLOY_WORKERS.md).

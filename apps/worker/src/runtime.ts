@@ -2,11 +2,7 @@
  * Workers Runtime adapters for @torob-mcp/core.
  */
 
-import {
-  DEFAULT_CONFIG,
-  type Logger,
-  type Runtime,
-} from '@torob-mcp/core';
+import { DEFAULT_CONFIG, type Logger, type Runtime } from '@torob-mcp/core';
 import { createWorkerCache } from './cache.ts';
 import { type WorkerBindings, type WorkerConfig, defaultUserAgent } from './config.ts';
 import { createUpstreamLimiter } from './rate-limit.ts';

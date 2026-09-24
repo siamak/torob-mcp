@@ -25,11 +25,11 @@ curl -sS -X POST https://torob-mcp.<account>.workers.dev/mcp \
 
 ## Bindings & secrets
 
-| Binding / secret | Purpose |
-| ---------------- | ------- |
-| `CACHE_KV` | Long-TTL cache (price charts, shops, cities) |
-| `MCP_RATE_LIMIT` | Edge rate limit, 60 req / 60s per token |
-| `TOROB_AUTH_TOKEN` | Bearer token (wrangler secret, ≥16 chars) |
+| Binding / secret             | Purpose                                       |
+| ---------------------------- | --------------------------------------------- |
+| `CACHE_KV`                   | Long-TTL cache (price charts, shops, cities)  |
+| `MCP_RATE_LIMIT`             | Edge rate limit, 60 req / 60s per token       |
+| `TOROB_AUTH_TOKEN`           | Bearer token (wrangler secret, ≥16 chars)     |
 | `TOROB_ALLOWED_ORIGIN_HOSTS` | Comma-separated hostnames for browser Origins |
 
 ## Claude Desktop (remote)

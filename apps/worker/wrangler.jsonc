@@ -10,7 +10,7 @@
   "workers_dev": true,
   "observability": {
     "enabled": true,
-    "head_sampling_rate": 1
+    "head_sampling_rate": 1,
   },
   "vars": {
     "TOROB_LOG_LEVEL": "info",
@@ -19,13 +19,13 @@
     "TOROB_MAX_SUBREQUESTS": "12",
     // Claude Desktop / claude.ai custom connectors present an Origin — allow them explicitly.
     // Comma-separated hostnames (no scheme). Empty = reject all browser Origins; non-browser OK.
-    "TOROB_ALLOWED_ORIGIN_HOSTS": "claude.ai,www.claude.ai,claude.com"
+    "TOROB_ALLOWED_ORIGIN_HOSTS": "claude.ai,www.claude.ai,claude.com",
   },
   "kv_namespaces": [
     {
       "binding": "CACHE_KV",
-      "id": "67c565846d8544fd8a14d81df3258d92"
-    }
+      "id": "67c565846d8544fd8a14d81df3258d92",
+    },
   ],
   // Edge rate limit: 60 req / 60s per auth token (or IP). Requires a paid Workers plan;
   // if deploy fails on this binding, remove it — the in-Worker token bucket still applies.
@@ -35,9 +35,9 @@
       "namespace_id": "1001",
       "simple": {
         "limit": 60,
-        "period": 60
-      }
-    }
+        "period": 60,
+      },
+    },
   ],
   "env": {
     "staging": {
@@ -48,13 +48,13 @@
         "TOROB_CONCURRENCY": "3",
         "TOROB_RATE_PER_SEC": "4",
         "TOROB_MAX_SUBREQUESTS": "12",
-        "TOROB_ALLOWED_ORIGIN_HOSTS": "claude.ai,www.claude.ai,claude.com"
+        "TOROB_ALLOWED_ORIGIN_HOSTS": "claude.ai,www.claude.ai,claude.com",
       },
       "kv_namespaces": [
         {
           "binding": "CACHE_KV",
-          "id": "67c565846d8544fd8a14d81df3258d92"
-        }
+          "id": "67c565846d8544fd8a14d81df3258d92",
+        },
       ],
       "ratelimits": [
         {
@@ -62,10 +62,10 @@
           "namespace_id": "1002",
           "simple": {
             "limit": 60,
-            "period": 60
-          }
-        }
-      ]
-    }
-  }
+            "period": 60,
+          },
+        },
+      ],
+    },
+  },
 }

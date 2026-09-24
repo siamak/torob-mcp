@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Match CI "Lint and format": oxlint + oxfmt --check.
+set -euo pipefail
+
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "pre-commit: pnpm not found on PATH" >&2
+  exit 1
+fi
+
+echo "pre-commit: pnpm exec oxlint ."
+pnpm exec oxlint .
+
+echo "pre-commit: pnpm exec oxfmt --check"
+pnpm exec oxfmt --check
