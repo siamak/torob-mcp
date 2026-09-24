@@ -38,11 +38,11 @@ const TOOL_ERROR_EXIT = 5;
 
 function inspector(args, { allowToolError = false } = {}) {
   // pnpm dlx, never npx: `npx <name>` can resolve to an unrelated package of the same name.
-  const result = spawnSync(
-    'pnpm',
-    ['dlx', INSPECTOR, '--cli', 'node', BIN, ...args],
-    { encoding: 'utf8', env: { ...process.env, TOROB_LOG_LEVEL: 'silent' }, timeout: 180_000 },
-  );
+  const result = spawnSync('pnpm', ['dlx', INSPECTOR, '--cli', 'node', BIN, ...args], {
+    encoding: 'utf8',
+    env: { ...process.env, TOROB_LOG_LEVEL: 'silent' },
+    timeout: 180_000,
+  });
   const acceptable = result.status === 0 || (allowToolError && result.status === TOOL_ERROR_EXIT);
   if (!acceptable) {
     throw new Error(`inspector exited ${result.status}\n${result.stderr ?? ''}`);
@@ -92,7 +92,14 @@ check('tools/call product_url (no upstream request)', () => {
 
 check('tools/call rejects a malformed id with an actionable error', () => {
   const result = inspector(
-    ['--method', 'tools/call', '--tool-name', 'product_details', '--tool-arg', 'product_id=not-a-uuid'],
+    [
+      '--method',
+      'tools/call',
+      '--tool-name',
+      'product_details',
+      '--tool-arg',
+      'product_id=not-a-uuid',
+    ],
     { allowToolError: true },
   );
   if (result.isError !== true) throw new Error('expected an error result');

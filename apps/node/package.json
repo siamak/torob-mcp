@@ -1,7 +1,7 @@
 {
   "name": "torob-mcp",
   "version": "0.1.0",
-  "description": "Unofficial MCP server for torob.com \u2014 Iran's price comparison engine",
+  "description": "Unofficial MCP server for torob.com — Iran's price comparison engine",
   "keywords": [
     "iran",
     "mcp",
@@ -9,7 +9,17 @@
     "price-comparison",
     "torob"
   ],
+  "homepage": "https://github.com/siamak/torob-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/siamak/torob-mcp/issues"
+  },
   "license": "MIT",
+  "author": "Siamak Mokhtari",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/siamak/torob-mcp.git",
+    "directory": "apps/node"
+  },
   "bin": {
     "torob-mcp": "./dist/bin.mjs"
   },
@@ -36,15 +46,5 @@
   },
   "engines": {
     "node": ">=22"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/siamak/torob-mcp.git",
-    "directory": "apps/node"
-  },
-  "homepage": "https://github.com/siamak/torob-mcp#readme",
-  "bugs": {
-    "url": "https://github.com/siamak/torob-mcp/issues"
-  },
-  "author": "Siamak Mokhtari"
+  }
 }
