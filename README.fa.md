@@ -189,6 +189,7 @@ pnpm inspect        # MCP Inspector
 
 ## مستندات
 
+[ویکی](wiki/fa/Home.md) ·
 [فهرست docs](docs/README.md) ·
 [Endpointها](docs/ENDPOINTS.md) ·
 [معماری](docs/ARCHITECTURE.md) ·
@@ -197,6 +198,8 @@ pnpm inspect        # MCP Inspector
 [استقرار](docs/DEPLOY.md) ·
 [وابستگی‌ها](docs/DEPENDENCIES.md) ·
 [سیاست امنیتی](SECURITY.md)
+
+راهنماهای کاربری در [`wiki/`](wiki/Home.md) هستند؛ مرجع فنی عمیق در [`docs/`](docs/README.md).
 
 ## مجوز
 

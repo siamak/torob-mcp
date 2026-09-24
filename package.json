@@ -15,7 +15,8 @@
     "inspect": "pnpm --filter torob-mcp inspect",
     "test:coverage": "pnpm exec vitest run --coverage",
     "inspect:cli": "node scripts/inspector-smoke.mjs",
-    "inspect:cli:live": "node scripts/inspector-smoke.mjs --live"
+    "inspect:cli:live": "node scripts/inspector-smoke.mjs --live",
+    "wiki:publish": "bash scripts/publish-wiki.sh"
   },
   "devDependencies": {
     "@types/node": "22.10.2",

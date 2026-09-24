@@ -148,6 +148,7 @@ Everything is optional and validated at startup. See [`.env.example`](.env.examp
 > `pnpm test:live` from the target host.
 
 Full Docker, Iranian VPS, Fly.io and Railway recipes: [`docs/DEPLOY.md`](docs/DEPLOY.md).
+Workers egress probe (Phase 5.0 gate): [`docs/WORKERS_EGRESS.md`](docs/WORKERS_EGRESS.md).
 
 ## Security model
 
@@ -194,6 +195,7 @@ Monorepo: `packages/core` is runtime-agnostic (no `node:*`; everything injected 
 
 ## Docs
 
+[Wiki](wiki/Home.md) ·
 [Index](docs/README.md) ·
 [Endpoints](docs/ENDPOINTS.md) ·
 [Architecture](docs/ARCHITECTURE.md) ·
@@ -203,6 +205,10 @@ Monorepo: `packages/core` is runtime-agnostic (no `node:*`; everything injected 
 [Dependencies](docs/DEPENDENCIES.md) ·
 [Security policy](SECURITY.md) ·
 [Contributing](CONTRIBUTING.md)
+
+User-facing guides live in [`wiki/`](wiki/Home.md) (Getting started, Tools, Recipes, Deploy).
+Deep technical reference stays in [`docs/`](docs/README.md). Publish to the GitHub Wiki tab with
+`pnpm wiki:publish` after the first wiki page exists on GitHub.
 
 ## License
 

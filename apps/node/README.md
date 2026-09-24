@@ -160,6 +160,7 @@ shop profiles allowlisted. **No telemetry, no cookies, no disk persistence.**
 
 ## Docs
 
+[Wiki](https://github.com/siamak/torob-mcp/blob/main/wiki/Home.md) ·
 [Index](https://github.com/siamak/torob-mcp/blob/main/docs/README.md) ·
 [Endpoints](https://github.com/siamak/torob-mcp/blob/main/docs/ENDPOINTS.md) ·
 [Architecture](https://github.com/siamak/torob-mcp/blob/main/docs/ARCHITECTURE.md) ·

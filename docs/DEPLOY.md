@@ -164,10 +164,10 @@ Same caveat: confirm egress before relying on it.
 
 ## Cloudflare Workers
 
-Not yet supported. Phase 5 begins with a probe Worker that measures whether Cloudflare's egress can
-reach Torob at all from several colos over several days. If it cannot, the design falls back to a
-minimal relay with an Iranian egress IP behind Cloudflare Tunnel. Results will be recorded in
-`docs/WORKERS_EGRESS.md`.
+Phase 5.0 probe is live; results and the direct-vs-relay decision live in
+[`docs/WORKERS_EGRESS.md`](WORKERS_EGRESS.md). Do not deploy a production Worker until that file
+names a mode. If the mode is `relay`, upstream calls go through an Iranian-egress relay behind
+Cloudflare Tunnel — not through Workers egress.
 
 ## Operating notes
 

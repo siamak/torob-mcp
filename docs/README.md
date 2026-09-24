@@ -2,8 +2,15 @@
 
 Where to look, depending on what you need.
 
+**User guides** (install, tools, recipes): [`wiki/`](../wiki/Home.md) —
+also published to the [GitHub Wiki](https://github.com/siamak/torob-mcp/wiki) via `pnpm wiki:publish`.
+
+**Technical reference** (this folder): endpoints, architecture, threat model, privacy internals.
+
 | Doc                                      | Audience                         | What it answers                                                         |
 | ---------------------------------------- | -------------------------------- | ----------------------------------------------------------------------- |
+| [Wiki home](../wiki/Home.md)             | Everyone                         | Guided map: getting started, tools, recipes, deploy                     |
+| [Wiki (فارسی)](../wiki/fa/Home.md)       | Persian speakers                 | Persian wiki home                                                       |
 | [README](../README.md)                   | Everyone                         | Install, tools, config, quick start                                     |
 | [README (فارسی)](../README.fa.md)        | Persian speakers                 | Same as the README, in Persian                                          |
 | [DEPLOY.md](DEPLOY.md)                   | Operators                        | Where to run it, egress blocking, Docker / VPS / Fly / Railway          |
@@ -17,7 +24,7 @@ Where to look, depending on what you need.
 
 ## Start here
 
-- **Just want to use it?** → [README](../README.md) (or [فارسی](../README.fa.md)).
+- **Just want to use it?** → [Wiki](../wiki/Home.md) or [README](../README.md) (or [فارسی](../README.fa.md)).
 - **Deploying remotely?** → [DEPLOY.md](DEPLOY.md) — read the egress warning first.
 - **Changing how we talk to Torob?** → [ENDPOINTS.md](ENDPOINTS.md) + fixture + zod schema together.
 - **Adding a dependency?** → Justify it in [DEPENDENCIES.md](DEPENDENCIES.md) first.
