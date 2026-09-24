@@ -12,4 +12,4 @@ export { ALLOWED_HOSTS } from './torob/endpoints.ts';
 export { type Result, TorobError, type TorobErrorKind } from './torob/errors.ts';
 
 export const SERVER_NAME = 'torob-mcp';
-export const SERVER_VERSION = '0.1.1';
+export const SERVER_VERSION = '0.1.2';
