@@ -13,9 +13,16 @@ export interface FetchCall {
   headers: Record<string, string>;
 }
 
+/**
+ * Responses are factories, never Response instances.
+ *
+ * `Response.clone()` tees the body, and the untouched twin deadlocks whenever the client cancels
+ * or abandons a body - which is exactly what the redirect and size-cap paths do. Building a fresh
+ * Response per call sidesteps that entirely.
+ */
 export interface StubOptions {
-  /** Responses served in order; the last one repeats once exhausted. */
-  responses: (Response | (() => Response | Promise<Response>))[];
+  /** Served in order; the last one repeats once exhausted. */
+  responses: (() => Response | Promise<Response>)[];
 }
 
 export function recordingFetch(options: StubOptions): {
@@ -33,17 +40,24 @@ export function recordingFetch(options: StubOptions): {
     const entry = options.responses[Math.min(index, options.responses.length - 1)];
     index += 1;
     if (entry === undefined) throw new Error('no stub response configured');
-    return typeof entry === 'function' ? await entry() : entry.clone();
+    return await entry();
   };
 
   return { fetch, calls };
 }
 
-export const json = (body: unknown, status = 200): Response =>
-  new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+export const json =
+  (body: unknown, status = 200) =>
+  (): Response =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { 'content-type': 'application/json' },
+    });
 
-export const text = (body: string, status = 200, headers: Record<string, string> = {}): Response =>
-  new Response(body, { status, headers });
+export const text =
+  (body: string, status = 200, headers: Record<string, string> = {}) =>
+  (): Response =>
+    new Response(body, { status, headers });
 
 export function memoryCache(): Cache & { size: () => number } {
   const store = new Map<string, { value: unknown; expires: number }>();
