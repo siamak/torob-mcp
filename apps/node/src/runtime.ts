@@ -6,7 +6,7 @@
  */
 
 import { LRUCache } from 'lru-cache';
-import { pino, type Logger as PinoLogger } from 'pino';
+import pino, { type Logger as PinoLogger } from 'pino';
 import { DEFAULT_CONFIG, TorobError, type Cache, type Logger, type RateLimiter, type Runtime } from '@torob-mcp/core';
 import { defaultUserAgent, type Env } from './config.ts';
 
@@ -117,7 +117,7 @@ function createLimiter(ratePerSec: number, concurrency: number): RateLimiter {
  * destination is fixed at fd 2 rather than configurable.
  */
 export function createLogger(level: Env['TOROB_LOG_LEVEL']): PinoLogger {
-  return pino({ level, base: undefined }, pino.destination(2));
+  return pino({ level, base: null }, pino.destination(2));
 }
 
 function toCoreLogger(logger: PinoLogger): Logger {
