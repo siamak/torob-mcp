@@ -6,13 +6,14 @@
     "build": "pnpm -r build",
     "dev": "pnpm --filter torob-mcp dev",
     "dev:http": "pnpm --filter torob-mcp dev:http",
-    "test": "vitest run",
-    "test:live": "TOROB_LIVE=1 vitest run --config vitest.live.config.ts",
-    "check": "oxlint . && oxfmt --check && pnpm -r typecheck",
-    "check:fix": "oxlint --fix && oxfmt",
-    "lint": "oxlint .",
-    "fmt": "oxfmt",
-    "inspect": "pnpm --filter torob-mcp inspect"
+    "test": "pnpm exec vitest run",
+    "test:live": "TOROB_LIVE=1 pnpm exec vitest run --config vitest.live.config.ts",
+    "check": "pnpm exec oxlint . && pnpm exec oxfmt --check && pnpm -r typecheck",
+    "check:fix": "pnpm exec oxlint --fix && pnpm exec oxfmt",
+    "lint": "pnpm exec oxlint .",
+    "fmt": "pnpm exec oxfmt",
+    "inspect": "pnpm --filter torob-mcp inspect",
+    "test:coverage": "pnpm exec vitest run --coverage"
   },
   "devDependencies": {
     "@types/node": "22.10.2",
