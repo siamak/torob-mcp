@@ -37,6 +37,14 @@ Unofficial MCP server for torob.com. MIT. TS strict, ESM, Node 22+, pnpm.
 - No telemetry, no cookies, no disk persistence.
 - No new runtime dependency without a justification in `docs/DEPENDENCIES.md`.
 - Never commit real user queries, cookies, or tokens in fixtures.
+- Never write an invisible character literally into source — build it from a code point.
+  `source-hygiene.test.ts` fails the build otherwise.
+- Never run an autofix marked unsafe or dangerous (`oxlint --fix-dangerously`): one rewrote
+  `\uXXXX` escapes into real control and bidi characters inside `sanitize.ts`.
+- Cache keys and cursor bindings are SHA-256 over canonical JSON. Never truncate an encoding to
+  make a key — a collision returns one query's results for another. See docs/ARCHITECTURE.md §5a.
+- A filter test must prove the result set narrowed. Torob answers an unknown parameter with 200
+  and no filtering.
 
 ## Definition of done
 

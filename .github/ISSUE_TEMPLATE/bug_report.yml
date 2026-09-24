@@ -1,0 +1,38 @@
+name: Bug report
+description: Something does not work as documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do not report security issues here — use the
+        [security advisory form](https://github.com/siamak/torob-mcp/security/advisories/new).
+  - type: textarea
+    attributes:
+      label: What happened
+      description: Include the tool you called and the arguments, with anything personal removed.
+    validations: { required: true }
+  - type: textarea
+    attributes:
+      label: What you expected
+    validations: { required: true }
+  - type: input
+    attributes:
+      label: torob-mcp version
+      placeholder: '0.1.0'
+    validations: { required: true }
+  - type: dropdown
+    attributes:
+      label: Transport
+      options: [stdio, HTTP, Cloudflare Worker]
+    validations: { required: true }
+  - type: input
+    attributes:
+      label: Where is the server running
+      description: Country and hosting kind. Torob blocks many cloud egress IPs, which looks like a bug.
+      placeholder: 'home connection in Iran / VPS in Germany / Fly.io'
+  - type: textarea
+    attributes:
+      label: Logs
+      description: Run with TOROB_LOG_LEVEL=debug. Logs go to stderr. Remove anything personal.
+      render: shell

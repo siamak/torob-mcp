@@ -18,7 +18,9 @@ import { json, memoryCache, recordingFetch, testRuntime } from './helpers.ts';
 const FIXTURES = fileURLToPath(new URL('../../../fixtures/', import.meta.url));
 const fixture = (name: string): unknown => {
   const raw: unknown = JSON.parse(readFileSync(`${FIXTURES}${name}.json`, 'utf8'));
-  return typeof raw === 'object' && raw !== null && 'data' in raw ? (raw as { data: unknown }).data : raw;
+  return typeof raw === 'object' && raw !== null && 'data' in raw
+    ? (raw as { data: unknown }).data
+    : raw;
 };
 
 const PRODUCT_ID = '57ea65ae-0798-4cd0-96a7-38d8af180345';
@@ -59,9 +61,23 @@ const card = (over: Record<string, unknown> = {}): Record<string, unknown> => ({
 describe('find_best_value', () => {
   const body = {
     results: [
-      card({ random_key: '11111111-1111-4111-8111-111111111111', name1: 'cheap, many sellers', price: 200_000, shop_text: 'در ۳۰۰ فروشگاه' }),
-      card({ random_key: '22222222-2222-4222-8222-222222222222', name1: 'near budget', price: 1_900_000, shop_text: 'در ۲ فروشگاه' }),
-      card({ random_key: '33333333-3333-4333-8333-333333333333', name1: 'over budget', price: 9_000_000 }),
+      card({
+        random_key: '11111111-1111-4111-8111-111111111111',
+        name1: 'cheap, many sellers',
+        price: 200_000,
+        shop_text: 'در ۳۰۰ فروشگاه',
+      }),
+      card({
+        random_key: '22222222-2222-4222-8222-222222222222',
+        name1: 'near budget',
+        price: 1_900_000,
+        shop_text: 'در ۲ فروشگاه',
+      }),
+      card({
+        random_key: '33333333-3333-4333-8333-333333333333',
+        name1: 'over budget',
+        price: 9_000_000,
+      }),
     ],
     count: 3,
   };
@@ -88,7 +104,11 @@ describe('find_best_value', () => {
   it('sends the budget upstream as an upper price bound', async () => {
     const { fetch, calls } = recordingFetch({ responses: [json(body)] });
     const client = await connect(testRuntime({ fetch }));
-    await call(client, 'find_best_value', { query: 'x', budget_toman: 2_000_000, must_be_new: true });
+    await call(client, 'find_best_value', {
+      query: 'x',
+      budget_toman: 2_000_000,
+      must_be_new: true,
+    });
 
     const url = new URL(calls[0]?.url ?? '');
     expect(url.searchParams.get('price__lt')).toBe('2000000');
@@ -155,7 +175,11 @@ describe('torob_suggest', () => {
     const { fetch, calls } = recordingFetch({
       responses: [
         json([{ text: 'ayfon 13' }, { text: 'ayfon 16' }, { text: 'ayfon 13' }]),
-        json({ results: [], count: 0, spellcheck: { is_spellchecked: true, corrected_query: 'iphone' } }),
+        json({
+          results: [],
+          count: 0,
+          spellcheck: { is_spellchecked: true, corrected_query: 'iphone' },
+        }),
       ],
     });
     const client = await connect(testRuntime({ fetch }));
@@ -190,7 +214,11 @@ describe('torob_suggest', () => {
     const { fetch } = recordingFetch({
       responses: [
         json([{ text: 'iphone' }]),
-        json({ results: [], count: 0, spellcheck: { is_spellchecked: false, corrected_query: '' } }),
+        json({
+          results: [],
+          count: 0,
+          spellcheck: { is_spellchecked: false, corrected_query: '' },
+        }),
       ],
     });
     const client = await connect(testRuntime({ fetch }));
@@ -245,7 +273,10 @@ describe('price-chart verdict', () => {
 
   it('says unknown rather than guessing when history is thin', async () => {
     const { fetch } = recordingFetch({
-      responses: [json(chart([1_000_000, 2_000_000])), json({ random_key: PRODUCT_ID, min_price: 1_500_000 })],
+      responses: [
+        json(chart([1_000_000, 2_000_000])),
+        json({ random_key: PRODUCT_ID, min_price: 1_500_000 }),
+      ],
     });
     const client = await connect(testRuntime({ fetch }));
     const { data } = await call(client, 'product_price_chart', { product_id: PRODUCT_ID });
@@ -291,10 +322,15 @@ describe('compare_products', () => {
 
   it('lists only the specs that differ and names the cheapest', async () => {
     const { fetch } = recordingFetch({
-      responses: [json(withSpecs(PRODUCT_ID, 5_000_000, '128GB')), json(withSpecs(OTHER_ID, 3_000_000, '256GB'))],
+      responses: [
+        json(withSpecs(PRODUCT_ID, 5_000_000, '128GB')),
+        json(withSpecs(OTHER_ID, 3_000_000, '256GB')),
+      ],
     });
     const client = await connect(testRuntime({ fetch, cache: memoryCache() }));
-    const { data } = await call(client, 'compare_products', { product_ids: [PRODUCT_ID, OTHER_ID] });
+    const { data } = await call(client, 'compare_products', {
+      product_ids: [PRODUCT_ID, OTHER_ID],
+    });
 
     const diff = data['spec_diff'] as { spec: string }[];
     expect(diff.map((d) => d.spec)).toContain('storage');
@@ -308,7 +344,9 @@ describe('compare_products', () => {
     const { fetch, calls } = recordingFetch({ responses: [json(withSpecs(PRODUCT_ID, 1, 'x'))] });
     const client = await connect({ ...base, fetch, config: { ...base.config, maxSubrequests: 1 } });
 
-    const { isError } = await call(client, 'compare_products', { product_ids: [PRODUCT_ID, OTHER_ID] });
+    const { isError } = await call(client, 'compare_products', {
+      product_ids: [PRODUCT_ID, OTHER_ID],
+    });
     expect(isError).toBe(true);
     expect(calls).toHaveLength(0);
   });
@@ -323,9 +361,11 @@ describe('get_products_batch', () => {
       ],
     });
     const client = await connect(testRuntime({ fetch, cache: memoryCache() }));
-    const { data } = await call(client, 'get_products_batch', { product_ids: [PRODUCT_ID, OTHER_ID] });
+    const { data } = await call(client, 'get_products_batch', {
+      product_ids: [PRODUCT_ID, OTHER_ID],
+    });
 
-    expect((data['products'] as unknown[])).toHaveLength(1);
+    expect(data['products'] as unknown[]).toHaveLength(1);
     expect(data['not_found']).toEqual([OTHER_ID]);
   });
 });
@@ -337,7 +377,10 @@ describe('product_url', () => {
     });
     const client = await connect(testRuntime({ fetch }));
 
-    const { data } = await call(client, 'product_url', { product_id: PRODUCT_ID, include_title: true });
+    const { data } = await call(client, 'product_url', {
+      product_id: PRODUCT_ID,
+      include_title: true,
+    });
     expect(data['title_fa']).toBe('the title');
     expect(calls).toHaveLength(1);
   });

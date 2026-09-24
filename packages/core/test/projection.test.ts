@@ -99,13 +99,26 @@ describe('search results with nothing optional present', () => {
     const result = await data(client, 'search_torob', { query: 'x', limit: 2 });
 
     const card = (result['products'] as Record<string, unknown>[])[0];
-    for (const absent of ['title_en', 'price_toman', 'shop_count', 'condition', 'is_ad', 'badges']) {
+    for (const absent of [
+      'title_en',
+      'price_toman',
+      'shop_count',
+      'condition',
+      'is_ad',
+      'badges',
+    ]) {
       expect(card, absent).not.toHaveProperty(absent);
     }
     // A missing url falls back to the canonical form rather than a broken relative path.
     expect(card?.['url']).toBe(`https://torob.com/p/${PRODUCT_ID}/`);
 
-    for (const absent of ['approx_total', 'price_span_toman', 'spelling_correction', 'suggested_categories', 'next_cursor']) {
+    for (const absent of [
+      'approx_total',
+      'price_span_toman',
+      'spelling_correction',
+      'suggested_categories',
+      'next_cursor',
+    ]) {
       expect(result, absent).not.toHaveProperty(absent);
     }
   });
@@ -166,7 +179,9 @@ describe('seller projection edges', () => {
 
   it('omits a percentile of zero, which upstream uses to mean "unrated"', async () => {
     const { fetch } = recordingFetch({
-      responses: [json({ results: [{ shop_name: 'shop', price: 1, shop_score_percentile: 0 }], count: 1 })],
+      responses: [
+        json({ results: [{ shop_name: 'shop', price: 1, shop_score_percentile: 0 }], count: 1 }),
+      ],
     });
     const client = await connect(testRuntime({ fetch, cache: memoryCache() }));
     const result = await data(client, 'product_sellers', { product_id: PRODUCT_ID });

@@ -30,15 +30,11 @@ describe('letter normalization', () => {
 describe('normalizeQuery', () => {
   it('unifies the two spellings of the same Persian query', () => {
     // Arabic yeh vs Persian yeh - the single most common source of duplicate cache entries.
-    expect(normalizeQuery('ايفون')).toBe(
-      normalizeQuery('ایفون'),
-    );
+    expect(normalizeQuery('ايفون')).toBe(normalizeQuery('ایفون'));
   });
 
   it('folds ZWNJ to a space for matching', () => {
-    expect(normalizeQuery('می‌دان')).toBe(
-      'می دان',
-    );
+    expect(normalizeQuery('می‌دان')).toBe('می دان');
   });
 
   it('property: is idempotent', () => {
@@ -62,9 +58,7 @@ describe('parsePersianInt', () => {
   });
 
   it('reads a price with Persian thousands separators', () => {
-    expect(
-      parsePersianInt('۱۱۳٫۰۰۰٫۰۰۰ تومان'),
-    ).toBe(113_000_000);
+    expect(parsePersianInt('۱۱۳٫۰۰۰٫۰۰۰ تومان')).toBe(113_000_000);
   });
 
   it('returns undefined rather than guessing', () => {
@@ -143,9 +137,7 @@ describe('Jalali conversion', () => {
 
 describe('parseJalaliLabel', () => {
   it('parses a price-chart label', () => {
-    expect(parseJalaliLabel('۴ آبان ۱۴۰۰')).toBe(
-      '2021-10-26',
-    );
+    expect(parseJalaliLabel('۴ آبان ۱۴۰۰')).toBe('2021-10-26');
   });
 
   it('returns undefined for an unrecognised label rather than a wrong date', () => {

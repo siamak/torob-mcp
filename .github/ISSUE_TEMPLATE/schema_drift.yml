@@ -1,0 +1,26 @@
+name: Schema drift
+description: Torob changed a response and a tool broke
+labels: [schema-drift]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Torob has no public API and no versioning, so responses change without notice.
+        The nightly live smoke run opens these automatically; file one by hand if you hit it first.
+  - type: input
+    attributes:
+      label: Which endpoint
+      placeholder: '/v4/base-product/search/'
+    validations: { required: true }
+  - type: textarea
+    attributes:
+      label: What changed
+      description: The field, its old shape and its new one. See docs/ENDPOINTS.md for the field map.
+    validations: { required: true }
+  - type: checkboxes
+    attributes:
+      label: Fixing this means updating all three
+      options:
+        - label: docs/ENDPOINTS.md
+        - label: the fixture in fixtures/
+        - label: the zod schema

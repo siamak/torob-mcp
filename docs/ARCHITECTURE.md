@@ -255,6 +255,78 @@ with our cursor. Page 2 of a seller list costs zero subrequests.
 
 ---
 
+## 5a. Cache keys and cursors
+
+Both are derived from the same value, and getting it wrong is how a cache silently lies.
+
+### The key
+
+```
+argsKey(args) = SHA-256( canonicalJson(normalized args) )   ->  64 hex characters
+```
+
+`canonicalJson` sorts object keys, drops `undefined` and `null` (absent and null mean the same
+thing for a query), and preserves array order — `product_ids` order is the caller's, even when the
+result does not depend on it. Persian text is normalized through `lib/fa.ts` _before_ it enters the
+key, so `آیفون` and `ايفون` (Arabic yeh) hit one entry rather than two.
+
+The cache key is then `v1:<endpoint path>:<argsKey>`. The `v1` prefix is bumped whenever a schema or
+projection changes, so a deploy can never serve a stale shape. The **raw URL is never the key** —
+it carries `suid`, `rank_offset` and experiment ids that vary per request and would defeat caching
+entirely.
+
+### Why the hash must be collision-resistant
+
+This is not a performance detail, and the project learned it the hard way.
+
+An earlier version built the key by base64-encoding the arguments and **truncating to 22
+characters**. Base64 is a _positional encoding_, not a digest: the first 22 characters depend only
+on the first ~16 bytes of input. Every argument set sharing a prefix therefore produced an
+identical key. `{category_id: 94, page: 0, size: 5, sort: "cheapest"}` and the same object with
+`"priciest"` differ only in their last field — so they collided, and `browse_category` returned the
+_cheapest_ results for all three sorts while reporting them as sorted correctly.
+
+That failure has a general shape worth stating, because it is easy to reintroduce:
+
+- A cache key is a claim that two requests are **the same request**. A collision is not a slow
+  cache, it is **wrong data returned confidently** — the worst failure mode this project has, since
+  the model will state the prices as fact.
+- The same value **binds a cursor to its query**. A collision would let a cursor minted for query A
+  be accepted for query B, paging one result set with another's offsets.
+- Truncation is only safe on a value where every input bit already affects every output bit. That
+  is true of a hash and false of every encoding.
+
+So the rule is: **the key is a cryptographic digest over the full canonical form, never a prefix of
+an encoding, and never a fast non-cryptographic hash chosen for speed.** SHA-256 via
+`crypto.subtle` is web-standard, available under both Node and workerd, and costs microseconds
+against a network call measured in hundreds of milliseconds. The cost argument for a weaker hash
+does not exist here.
+
+Regression coverage lives in `packages/core/test/cursor.test.ts` (the three sorts produce three
+keys; a 200-character shared prefix still separates; a property test asserts distinct canonical
+args give distinct keys and reordered or padded args give the same key) and in
+`tools.test.ts`, which asserts the three `browse_category` sorts issue three separate upstream
+requests with three different `sort` values.
+
+### Cursors
+
+A cursor is our own state, never Torob's `next` URL — that URL carries session identifiers we
+refuse to echo or follow. It is base64url over:
+
+```jsonc
+{ "v": 1, "t": "search_torob", "o": 40, "k": "<argsKey>" }
+```
+
+`t` pins it to the tool that minted it, `o` is the offset, `k` binds it to the exact arguments.
+On decode it is **parsed through a zod `strictObject`**, not trusted: it is caller-supplied input
+that arrived through an LLM, so it gets the same treatment as any other external data. Wrong
+version, fractional or negative offset, an offset past the ceiling, a short key, extra members, or
+anything that is not an object are all rejected as an actionable `NotFound` — never a crash, and
+never a message that echoes the key back.
+
+Where upstream returns a whole list at once (`sellers/`, `similar-base-product/`), the cursor pages
+a single cached response, so page two costs zero upstream requests.
+
 ## 6. Rate limiting and politeness
 
 Two independent gates, both in `apps/node/runtime.ts` (and their Workers equivalents later):
@@ -412,10 +484,13 @@ offline and deterministic; fake timers drive cache and backoff.
 
 ---
 
-## 12. What I need from you
+## 12. Decisions taken
 
-1. **Approve or amend the tool table** (§7) — names, inputs, output shapes.
-2. **`deliver_city` (§8)** — proceeding with (b) unless you say otherwise.
-3. **`approx_total`** instead of `total` on search results (the 1200 cap) — confirm.
-4. **Jalali converter in-repo** rather than `jalaali-js` — confirm.
-5. Anything to add to `docs/THREAT_MODEL.md` before it becomes the reference for Phase 3.
+| Question from Phase 1     | Outcome                                                                                                                                                                  |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Tool table                | Built as proposed, all fifteen, verified against the live API.                                                                                                           |
+| `deliver_city` (§8)       | Option (b): one derived request header, no cookie jar, nothing persisted. Documented in `docs/PRIVACY.md`.                                                               |
+| `approx_total` vs `total` | `approx_total`, because `count` caps at 1200 on broad browses.                                                                                                           |
+| Jalali converter          | In-repo, ~40 lines in `lib/fa.ts`. `jalaali-js` is a **devDependency** used as the oracle in a property test, so the correctness guarantee ships without the dependency. |
+| One file per tool         | Grouped by the upstream call they share instead — see §1.                                                                                                                |
+| Lint toolchain            | `oxlint` + `oxfmt` (the brief said Biome; the switch happened during Phase 3).                                                                                           |

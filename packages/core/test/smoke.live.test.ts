@@ -80,7 +80,8 @@ const prices = (cards: Card[]): number[] =>
   cards.map((c) => c.price_toman).filter((p): p is number => typeof p === 'number');
 
 /** Torob mixes sponsored cards into results regardless of sort, so they are excluded. */
-const organic = (cards: (Card & { is_ad?: boolean })[]): Card[] => cards.filter((c) => c.is_ad !== true);
+const organic = (cards: (Card & { is_ad?: boolean })[]): Card[] =>
+  cards.filter((c) => c.is_ad !== true);
 
 const MOBILE_CATEGORY = 94;
 const APPLE_BRAND = 14;
@@ -181,7 +182,10 @@ describeLive('live smoke', () => {
 
     it('narrows the result count rather than returning everything', async () => {
       const [all, banded] = await Promise.all([
-        call<{ approx_total?: number }>('browse_category', { category_id: MOBILE_CATEGORY, limit: 1 }),
+        call<{ approx_total?: number }>('browse_category', {
+          category_id: MOBILE_CATEGORY,
+          limit: 1,
+        }),
         call<{ approx_total?: number }>('browse_category', {
           category_id: MOBILE_CATEGORY,
           price_min_toman: 20_000_000,
@@ -204,9 +208,7 @@ describeLive('live smoke', () => {
       const titles = organic(result.products).map((p) => `${p.title_fa}`.toLowerCase());
       expect(titles.length).toBeGreaterThan(5);
       // Apple phones read as either "آیفون"/"اپل" or the Latin "iphone"/"apple".
-      const appleish = titles.filter((t) =>
-        /iphone|apple|آیفون|اپل/.test(t),
-      );
+      const appleish = titles.filter((t) => /iphone|apple|آیفون|اپل/.test(t));
       expect(appleish.length / titles.length).toBeGreaterThan(0.7);
     });
 
@@ -232,10 +234,10 @@ describeLive('live smoke', () => {
       const first = organic(result.products)[0];
       expect(first).toBeDefined();
 
-      const details = await call<{ category_path: { category_id?: number }[]; category_id?: number }>(
-        'product_details',
-        { product_id: first?.product_id },
-      );
+      const details = await call<{
+        category_path: { category_id?: number }[];
+        category_id?: number;
+      }>('product_details', { product_id: first?.product_id });
       const ids = details.category_path.map((step) => step.category_id);
       expect([...ids, details.category_id]).toContain(MOBILE_CATEGORY);
     });
@@ -286,10 +288,11 @@ describeLive('live smoke', () => {
       const target = organic(search.products).find((p) => (p.shop_count ?? 0) > 3);
       expect(target, 'no product with several sellers to page through').toBeDefined();
 
-      const page1 = await call<{ sellers: { shop_name: string }[]; next_cursor?: string; total: number }>(
-        'product_sellers',
-        { product_id: target?.product_id, limit: 3 },
-      );
+      const page1 = await call<{
+        sellers: { shop_name: string }[];
+        next_cursor?: string;
+        total: number;
+      }>('product_sellers', { product_id: target?.product_id, limit: 3 });
       if (page1.next_cursor === undefined) return;
 
       const page2 = await call<{ sellers: { shop_name: string }[] }>('product_sellers', {

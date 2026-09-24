@@ -84,8 +84,9 @@ describe('cursors', () => {
 
   it('property: round-trips any valid offset', () => {
     fc.assert(
-      fc.property(fc.integer({ min: 0, max: 100_000 }), (offset) =>
-        decodeCursor(encodeCursor('t', offset, key), 't', key) === offset,
+      fc.property(
+        fc.integer({ min: 0, max: 100_000 }),
+        (offset) => decodeCursor(encodeCursor('t', offset, key), 't', key) === offset,
       ),
       { numRuns: 200 },
     );

@@ -122,8 +122,17 @@ describe('upstream error bodies', () => {
 describe('fixture hygiene', () => {
   it('carries no session identifiers, cookies or contact details', () => {
     const raw = readFileSync(`${FIXTURES}shop_details.json`, 'utf8');
-    for (const forbidden of ['session_id=', 'suid=', 'bvid=', 'device_id=', '@gmail', 'billing_info']) {
-      expect(raw.includes(forbidden), `shop_details.json must not contain ${forbidden}`).toBe(false);
+    for (const forbidden of [
+      'session_id=',
+      'suid=',
+      'bvid=',
+      'device_id=',
+      '@gmail',
+      'billing_info',
+    ]) {
+      expect(raw.includes(forbidden), `shop_details.json must not contain ${forbidden}`).toBe(
+        false,
+      );
     }
   });
 

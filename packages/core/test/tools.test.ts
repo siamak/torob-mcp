@@ -18,7 +18,9 @@ const FIXTURES = fileURLToPath(new URL('../../../fixtures/', import.meta.url));
 
 function fixture(name: string): unknown {
   const raw: unknown = JSON.parse(readFileSync(`${FIXTURES}${name}.json`, 'utf8'));
-  return typeof raw === 'object' && raw !== null && 'data' in raw ? (raw as { data: unknown }).data : raw;
+  return typeof raw === 'object' && raw !== null && 'data' in raw
+    ? (raw as { data: unknown }).data
+    : raw;
 }
 
 const PRODUCT_ID = '57ea65ae-0798-4cd0-96a7-38d8af180345';
@@ -182,8 +184,16 @@ describe('filter mapping', () => {
   });
 
   it('maps condition to the stock_status Torob uses', async () => {
-    expect((await capture('search_torob', { query: 'x', condition: 'used' })).searchParams.get('stock_status')).toBe('stock');
-    expect((await capture('search_torob', { query: 'x', condition: 'new' })).searchParams.get('stock_status')).toBe('new');
+    expect(
+      (await capture('search_torob', { query: 'x', condition: 'used' })).searchParams.get(
+        'stock_status',
+      ),
+    ).toBe('stock');
+    expect(
+      (await capture('search_torob', { query: 'x', condition: 'new' })).searchParams.get(
+        'stock_status',
+      ),
+    ).toBe('new');
   });
 
   it('normalizes Persian input before it reaches the wire', async () => {
@@ -391,7 +401,9 @@ describe('input validation', () => {
   });
 
   it('enforces the compare minimum and maximum server-side', async () => {
-    expect(await rejects('compare_products', { product_ids: [PRODUCT_ID] })).toContain('validation');
+    expect(await rejects('compare_products', { product_ids: [PRODUCT_ID] })).toContain(
+      'validation',
+    );
     expect(
       await rejects('compare_products', {
         product_ids: Array.from({ length: 6 }, () => PRODUCT_ID),
@@ -462,7 +474,9 @@ describe('prompt-injection hygiene', () => {
 
 describe('error mapping', () => {
   it('turns an upstream failure into a tool error with an actionable hint', async () => {
-    const { fetch } = recordingFetch({ responses: [json({ message: 'Base product not found' }, 404)] });
+    const { fetch } = recordingFetch({
+      responses: [json({ message: 'Base product not found' }, 404)],
+    });
     const client = await connect(testRuntime({ fetch }));
     const { isError, text } = await call(client, 'product_details', { product_id: PRODUCT_ID });
 

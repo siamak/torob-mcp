@@ -56,7 +56,10 @@ describe('sanitizeText', () => {
 
   it('property: never lengthens its input', () => {
     fc.assert(
-      fc.property(fc.string(), (s) => sanitizeText(s, FIELD_LIMITS.title).length <= Math.max(s.length, 1)),
+      fc.property(
+        fc.string(),
+        (s) => sanitizeText(s, FIELD_LIMITS.title).length <= Math.max(s.length, 1),
+      ),
       { numRuns: 500 },
     );
   });
@@ -74,8 +77,10 @@ describe('sanitizeText', () => {
 
   it('property: respects the limit for any input', () => {
     fc.assert(
-      fc.property(fc.string({ unit: 'binary' }), fc.integer({ min: 1, max: 200 }), (s, limit) =>
-        sanitizeText(s, limit).length <= limit,
+      fc.property(
+        fc.string({ unit: 'binary' }),
+        fc.integer({ min: 1, max: 200 }),
+        (s, limit) => sanitizeText(s, limit).length <= limit,
       ),
       { numRuns: 500 },
     );
@@ -83,7 +88,10 @@ describe('sanitizeText', () => {
 
   it('property: is idempotent', () => {
     fc.assert(
-      fc.property(fc.string({ unit: 'binary' }), (s) => sanitizeText(sanitizeText(s)) === sanitizeText(s)),
+      fc.property(
+        fc.string({ unit: 'binary' }),
+        (s) => sanitizeText(sanitizeText(s)) === sanitizeText(s),
+      ),
       { numRuns: 500 },
     );
   });
@@ -101,7 +109,13 @@ describe('sanitizeOptional', () => {
 describe('sanitizeList', () => {
   it('drops empties and caps the list', () => {
     expect(sanitizeList(['a', '', '  ', 'b'], 10)).toEqual(['a', 'b']);
-    expect(sanitizeList(Array.from({ length: 50 }, (_, i) => `x${i}`), 10, 4)).toHaveLength(4);
+    expect(
+      sanitizeList(
+        Array.from({ length: 50 }, (_, i) => `x${i}`),
+        10,
+        4,
+      ),
+    ).toHaveLength(4);
   });
 
   it('returns an empty list for a non-array', () => {

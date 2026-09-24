@@ -9,7 +9,7 @@
   },
   "overrides": [
     {
-      "files": ["packages/core/**"],
+      "files": ["packages/core/src/**"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -17,23 +17,23 @@
             "paths": [
               {
                 "name": "node:fs",
-                "message": "packages/core must stay runtime-agnostic — inject it through Runtime."
+                "message": "packages/core must stay runtime-agnostic \u2014 inject it through Runtime."
               },
               {
                 "name": "node:path",
-                "message": "packages/core must stay runtime-agnostic — inject it through Runtime."
+                "message": "packages/core must stay runtime-agnostic \u2014 inject it through Runtime."
               },
               {
                 "name": "node:crypto",
-                "message": "packages/core must stay runtime-agnostic — use crypto.subtle."
+                "message": "packages/core must stay runtime-agnostic \u2014 use crypto.subtle."
               },
               {
                 "name": "node:buffer",
-                "message": "packages/core must stay runtime-agnostic — use TextEncoder."
+                "message": "packages/core must stay runtime-agnostic \u2014 use TextEncoder."
               },
               {
                 "name": "node:process",
-                "message": "packages/core must stay runtime-agnostic — config is injected."
+                "message": "packages/core must stay runtime-agnostic \u2014 config is injected."
               },
               {
                 "name": "node:util",

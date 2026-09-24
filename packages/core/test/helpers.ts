@@ -6,7 +6,13 @@
  * same tests have to run inside workerd, where an interceptor library would not.
  */
 
-import { DEFAULT_CONFIG, type Cache, type Logger, type RateLimiter, type Runtime } from '../src/index.ts';
+import {
+  DEFAULT_CONFIG,
+  type Cache,
+  type Logger,
+  type RateLimiter,
+  type Runtime,
+} from '../src/index.ts';
 
 export interface FetchCall {
   url: string;

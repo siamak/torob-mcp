@@ -21,11 +21,15 @@ const FORBIDDEN: { name: string; test: (code: number) => boolean }[] = [
     test: (c) => c <= 0x001f && c !== 0x0009 && c !== 0x000a && c !== 0x000d,
   },
   { name: 'C1 control', test: (c) => c >= 0x007f && c <= 0x009f },
-  { name: 'bidi override or isolate', test: (c) => (c >= 0x202a && c <= 0x202e) || (c >= 0x2066 && c <= 0x2069) },
+  {
+    name: 'bidi override or isolate',
+    test: (c) => (c >= 0x202a && c <= 0x202e) || (c >= 0x2066 && c <= 0x2069),
+  },
   { name: 'arabic letter mark', test: (c) => c === 0x061c },
   {
     name: 'zero-width (non-ZWNJ)',
-    test: (c) => c === 0x200b || c === 0x200d || c === 0x200e || c === 0x200f || c === 0xfeff || c === 0x2060,
+    test: (c) =>
+      c === 0x200b || c === 0x200d || c === 0x200e || c === 0x200f || c === 0xfeff || c === 0x2060,
   },
 ];
 

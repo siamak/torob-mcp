@@ -15,7 +15,10 @@ import { TorobError } from '../src/torob/errors.ts';
 import { json, memoryCache, recordingFetch, testRuntime, text } from './helpers.ts';
 
 const Schema = z.object({ ok: z.boolean() });
-const spec = { url: new URL('https://api.torob.com/v4/base-product/search/?q=x'), label: '/search/' };
+const spec = {
+  url: new URL('https://api.torob.com/v4/base-product/search/?q=x'),
+  label: '/search/',
+};
 const opts = { ttlSeconds: 0, cacheKey: 'k' };
 
 describe('happy path', () => {
@@ -34,7 +37,9 @@ describe('happy path', () => {
 
   it('sends the derived deliver_city header only when a city was asked for', async () => {
     const id = endpoints.productId('57ea65ae-0798-4cd0-96a7-38d8af180345');
-    const { fetch, calls } = recordingFetch({ responses: [json({ ok: true }), json({ ok: true })] });
+    const { fetch, calls } = recordingFetch({
+      responses: [json({ ok: true }), json({ ok: true })],
+    });
     const runtime = testRuntime({ fetch });
 
     await request(runtime, endpoints.sellers(id, 'in_store'), Schema, opts);
@@ -74,10 +79,7 @@ describe('SSRF defences', () => {
 
   it('refuses to follow a redirect off the allowlist', async () => {
     const { fetch, calls } = recordingFetch({
-      responses: [
-        text('', 302, { location: 'https://evil.example/steal' }),
-        json({ ok: true }),
-      ],
+      responses: [text('', 302, { location: 'https://evil.example/steal' }), json({ ok: true })],
     });
     const result = await request(testRuntime({ fetch }), spec, Schema, opts);
     expect(result.ok).toBe(false);
@@ -130,9 +132,7 @@ describe('error classification', () => {
 
   it('maps a missing route to Upstream, not NotFound', async () => {
     // "صفحه‌ی مورد نظر پیدا نشد" means the endpoint is gone - that is drift, not a missing record.
-    const error = await classify(
-      json({ error: { message: 'صفحه‌ی مورد نظر پیدا نشد.' } }, 404),
-    );
+    const error = await classify(json({ error: { message: 'صفحه‌ی مورد نظر پیدا نشد.' } }, 404));
     expect(error.kind).toBe('Upstream');
   });
 

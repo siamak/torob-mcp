@@ -25,7 +25,9 @@ beforeAll(() => {
 });
 
 /** Drives the binary over stdio with raw JSON-RPC, the way a real MCP client does. */
-async function stdioSession(requests: unknown[]): Promise<{ responses: unknown[]; stderr: string }> {
+async function stdioSession(
+  requests: unknown[],
+): Promise<{ responses: unknown[]; stderr: string }> {
   return await new Promise((resolve, reject) => {
     const child = spawn('node', [BIN], { cwd: ROOT, env, stdio: ['pipe', 'pipe', 'pipe'] });
     let stdout = '';
