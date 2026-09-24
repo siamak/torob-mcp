@@ -1,0 +1,83 @@
+name: Nightly live smoke
+
+# Torob has no public API and no versioning, so the only way to learn that a response shape moved
+# is to ask it. These run against the real API, are non-blocking, and open an issue on drift.
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Live smoke tests
+        id: smoke
+        continue-on-error: true
+        run: pnpm test:live 2>&1 | tee live-output.txt
+
+      - name: Open an issue on drift
+        if: steps.smoke.outcome == 'failure'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+            const output = fs.readFileSync('live-output.txt', 'utf8').slice(-8000);
+            const title = 'Live smoke failed: Torob may have changed';
+
+            // One open issue per drift episode, updated rather than duplicated nightly.
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'schema-drift',
+            });
+
+            const body = [
+              'The nightly live smoke run failed. Either Torob changed a response shape or a',
+              'filter stopped behaving as documented in `docs/ENDPOINTS.md`.',
+              '',
+              'These tests assert semantics, not status codes, so a failure means the **data**',
+              'no longer matches what we asked for - not merely that a call errored.',
+              '',
+              `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              '',
+              '<details><summary>Output</summary>',
+              '',
+              '```',
+              output,
+              '```',
+              '',
+              '</details>',
+            ].join('\n');
+
+            if (existing.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.data[0].number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['schema-drift'],
+              });
+            }
