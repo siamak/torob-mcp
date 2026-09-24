@@ -50,7 +50,11 @@ function positiveInt<T extends number>(value: number, what: string, hint: string
 }
 
 export const shopId = (value: number): ShopId =>
-  positiveInt<ShopId>(value, 'shop id', 'that is not a Torob shop id - shop_id comes from product_sellers');
+  positiveInt<ShopId>(
+    value,
+    'shop id',
+    'that is not a Torob shop id - shop_id comes from product_sellers',
+  );
 
 export const categoryId = (value: number): CategoryId =>
   positiveInt<CategoryId>(
@@ -143,7 +147,11 @@ export const suggestion = (query: string): EndpointSpec => {
 export const details = (id: ProductId): EndpointSpec =>
   api('/v4/base-product/details/', { prk: id });
 
-export const sellers = (id: ProductId, kind: 'online' | 'in_store', city?: CityId): EndpointSpec => {
+export const sellers = (
+  id: ProductId,
+  kind: 'online' | 'in_store',
+  city?: CityId,
+): EndpointSpec => {
   const spec = api('/v4/base-product/sellers/', {
     prk: id,
     list_type: kind === 'online' ? 'products_info' : 'products_in_store_info',

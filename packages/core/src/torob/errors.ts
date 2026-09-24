@@ -39,12 +39,17 @@ export class TorobError extends Error {
   }
 }
 
-export type Result<T> = { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: TorobError };
+export type Result<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: TorobError };
 
 export const ok = <T>(value: T): Result<T> => ({ ok: true, value });
 export const err = <T = never>(error: TorobError): Result<T> => ({ ok: false, error });
 
 export const notFound = (what: string, hint: string, endpoint?: string): TorobError =>
-  new TorobError('NotFound', endpoint === undefined ? { hint, detail: what } : { hint, detail: what, endpoint });
+  new TorobError(
+    'NotFound',
+    endpoint === undefined ? { hint, detail: what } : { hint, detail: what, endpoint },
+  );
 
 export const isTorobError = (e: unknown): e is TorobError => e instanceof TorobError;

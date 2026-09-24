@@ -23,11 +23,25 @@ const DIGIT_OFFSETS: readonly [number, number][] = [
   [0x06f0, 0x06f9],
 ];
 
-/** Harakat and tatweel: invisible to meaning, noise for matching. */
-const DIACRITICS = /[ً-ْـٰ]/g;
+/**
+ * Invisible code points, written as numbers rather than regex literals.
+ *
+ * A formatter that collapses \\uXXXX escapes would otherwise put real invisible characters into
+ * this source, which is unreviewable in a file whose whole job is removing them.
+ */
+const range = (from: number, to: number): number[] =>
+  Array.from({ length: to - from + 1 }, (_, i) => from + i);
 
-/** Zero-width characters. U+200C (ZWNJ) is deliberately absent — it is meaningful in Persian. */
-const ZERO_WIDTH_EXCEPT_ZWNJ = /[​‍‎‏﻿]/g;
+const classOf = (codePoints: readonly number[]): RegExp =>
+  new RegExp(`[${codePoints.map((c) => `\\u${c.toString(16).padStart(4, '0')}`).join('')}]`, 'g');
+
+/** Harakat (U+064B-U+0652), tatweel (U+0640), superscript alef (U+0670): noise for matching. */
+const DIACRITICS = classOf([...range(0x064b, 0x0652), 0x0640, 0x0670]);
+
+/** Zero-width characters. U+200C (ZWNJ) is deliberately absent - it is meaningful in Persian. */
+const ZERO_WIDTH_EXCEPT_ZWNJ = classOf([0x200b, 0x200d, 0x200e, 0x200f, 0xfeff]);
+
+const ZWNJ = /\u200c/g;
 
 /** Converts Persian/Arabic digits in a string to ASCII, leaving everything else alone. */
 export function toAsciiDigits(input: string): string {
@@ -135,7 +149,10 @@ function jalCal(jy: number): JalCal | undefined {
 
 function g2d(gy: number, gm: number, gd: number): number {
   let d =
-    div((gy + div(gm - 8, 6) + 100100) * 1461, 4) + div(153 * mod(gm + 9, 12) + 2, 5) + gd - 34840408;
+    div((gy + div(gm - 8, 6) + 100100) * 1461, 4) +
+    div(153 * mod(gm + 9, 12) + 2, 5) +
+    gd -
+    34840408;
   d = d - div(div(gy + 100100 + div(gm - 8, 6), 100) * 3, 4) + 752;
   return d;
 }

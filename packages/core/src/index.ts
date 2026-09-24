@@ -5,8 +5,6 @@
  * imports a platform API.
  */
 
-export { registerTools } from './tools/index.ts';
-export { DEFAULT_CONFIG, DEFAULT_TTLS } from './runtime.ts';
 export type {
   Cache,
   CacheTtls,
@@ -15,8 +13,10 @@ export type {
   RateLimiter,
   Runtime,
 } from './runtime.ts';
-export { TorobError, type Result, type TorobErrorKind } from './torob/errors.ts';
+export { DEFAULT_CONFIG, DEFAULT_TTLS } from './runtime.ts';
+export { registerTools } from './tools/index.ts';
 export { ALLOWED_HOSTS } from './torob/endpoints.ts';
+export { type Result, TorobError, type TorobErrorKind } from './torob/errors.ts';
 
 export const SERVER_NAME = 'torob-mcp';
 export const SERVER_VERSION = '0.1.0';

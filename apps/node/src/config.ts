@@ -5,8 +5,8 @@
  * fixes one message rather than discovering problems one restart at a time.
  */
 
-import { z } from 'zod';
 import { SERVER_VERSION } from '@torob-mcp/core';
+import { z } from 'zod';
 
 const intFromEnv = (min: number, max: number, fallback: number) =>
   z
@@ -19,13 +19,16 @@ const csv = z
   .string()
   .optional()
   .transform((v) =>
-    v === undefined || v.trim() === '' ? [] : v.split(',').map((s) => s.trim()).filter(Boolean),
+    v === undefined || v.trim() === ''
+      ? []
+      : v
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean),
   );
 
 const EnvSchema = z.object({
-  TOROB_LOG_LEVEL: z
-    .enum(['trace', 'debug', 'info', 'warn', 'error', 'silent'])
-    .default('info'),
+  TOROB_LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'silent']).default('info'),
   TOROB_USER_AGENT: z.string().max(200).optional(),
   TOROB_TIMEOUT_MS: intFromEnv(1000, 60_000, 10_000),
   TOROB_CONCURRENCY: intFromEnv(1, 4, 3),
@@ -59,5 +62,7 @@ export function loadEnv(source: NodeJS.ProcessEnv): Env {
   if (parsed.success) return parsed.data;
 
   const lines = parsed.error.issues.map((issue) => `  ${issue.path.join('.')}: ${issue.message}`);
-  throw new Error(`Invalid configuration:\n${lines.join('\n')}\n\nSee .env.example for valid values.`);
+  throw new Error(
+    `Invalid configuration:\n${lines.join('\n')}\n\nSee .env.example for valid values.`,
+  );
 }
