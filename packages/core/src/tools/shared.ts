@@ -7,8 +7,8 @@
  */
 
 import { z } from 'zod';
-import type { Runtime } from '../runtime.ts';
 import { argsKey, decodeCursor, encodeCursor } from '../lib/cursor.ts';
+import type { Runtime } from '../runtime.ts';
 import { TorobError } from '../torob/errors.ts';
 
 /**
@@ -22,7 +22,9 @@ export const THIRD_PARTY_NOTICE =
 
 export const ProductIdInput = z
   .string()
-  .describe('Torob product id (a UUID). Get one from search_torob, similar_products or browse_category.');
+  .describe(
+    'Torob product id (a UUID). Get one from search_torob, similar_products or browse_category.',
+  );
 
 export const CursorInput = z
   .string()

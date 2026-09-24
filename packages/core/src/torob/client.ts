@@ -32,7 +32,9 @@ const MAX_TOTAL_BACKOFF_MS = 4000;
  */
 function assertAllowed(url: URL, endpoint: string): void {
   const allowed =
-    url.protocol === 'https:' && ALLOWED_HOSTS.has(url.hostname) && (url.port === '' || url.port === '443');
+    url.protocol === 'https:' &&
+    ALLOWED_HOSTS.has(url.hostname) &&
+    (url.port === '' || url.port === '443');
   if (!allowed) {
     throw new TorobError('Blocked', {
       hint: 'refused to contact a host outside torob.com - this is a bug in torob-mcp, please report it',
@@ -95,9 +97,13 @@ function upstreamMessage(text: string): string | undefined {
   }
   const result = ErrorBodySchema.safeParse(parsed);
   if (!result.success) return undefined;
-  const body = result.data;
-  if ('message' in body && typeof body.message === 'string') return body.message;
-  if ('error' in body) return body.error.message;
+  const body: Record<string, unknown> = result.data;
+  if (typeof body.message === 'string') return body.message;
+  const nested = body.error;
+  if (typeof nested === 'object' && nested !== null) {
+    const message = (nested as Record<string, unknown>).message;
+    if (typeof message === 'string') return message;
+  }
   return undefined;
 }
 
@@ -138,7 +144,7 @@ function classify(status: number, text: string, endpoint: string): TorobError {
 
   if (status === 404 || status === 400) {
     // "صفحه‌ی مورد نظر پیدا نشد" means the *route* is gone, which is drift, not a missing record.
-    if (message !== undefined && message.includes('صفحه')) {
+    if (message?.includes('صفحه')) {
       return new TorobError('Upstream', {
         hint: 'a Torob endpoint changed - this is a bug in torob-mcp, please report it',
         status,
