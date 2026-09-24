@@ -80,7 +80,7 @@ export function normalizeQuery(input: string): string {
   return toAsciiDigits(toPersianLetters(input.normalize('NFC')))
     .replace(DIACRITICS, '')
     .replace(ZERO_WIDTH_EXCEPT_ZWNJ, '')
-    .replace(/‌/g, ' ')
+    .replace(ZWNJ, ' ')
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();

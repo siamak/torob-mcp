@@ -77,10 +77,33 @@ export function decodeCursor(cursor: string, tool: string, key: string): number 
   return s.o;
 }
 
-/** Stable, order-independent key over the arguments a cursor is bound to. */
+/**
+ * FNV-1a, 64-bit.
+ *
+ * Non-cryptographic and deliberately so: this is a cache key and a cursor consistency check, not
+ * an authentication token. What it must be is a *digest* — every byte of the input has to affect
+ * the output. Truncating a positional encoding such as base64 does not have that property, and
+ * silently collapses argument sets that share a prefix onto one cache entry.
+ */
+function fnv1a64(text: string): string {
+  const PRIME = 0x100000001b3n;
+  const MASK = 0xffffffffffffffffn;
+  let hash = 0xcbf29ce484222325n;
+  for (const byte of new TextEncoder().encode(text)) {
+    hash = ((hash ^ BigInt(byte)) * PRIME) & MASK;
+  }
+  return hash.toString(16).padStart(16, '0');
+}
+
+/**
+ * Stable, order-independent key over the arguments a cursor or cache entry is bound to.
+ *
+ * Order independence matters because the same logical query must hit the same cache entry however
+ * the caller happened to order its arguments.
+ */
 export function argsKey(args: Record<string, unknown>): string {
   const entries = Object.entries(args)
     .filter(([, v]) => v !== undefined && v !== null)
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
-  return toBase64Url(new TextEncoder().encode(JSON.stringify(entries))).slice(0, 22);
+  return fnv1a64(JSON.stringify(entries));
 }

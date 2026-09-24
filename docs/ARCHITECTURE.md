@@ -21,7 +21,11 @@ torob-mcp/
 │     │  │  └─ errors.ts         TorobError variants + Result helpers
 │     │  ├─ tools/
 │     │  │  ├─ index.ts          registerTools(server, runtime)
-│     │  │  ├─ <one file per tool>.ts
+│     │  │  ├─ search.ts         search_torob, browse_category, find_best_value, search_filters
+│     │  │  ├─ product.ts        product_details, _variants, _url, get_products_batch,
+│     │  │  │                    compare_products, similar_products
+│     │  │  ├─ sellers.ts        product_sellers, product_stores, shop_profile
+│     │  │  ├─ insight.ts        product_price_chart, torob_suggest
 │     │  │  └─ shared.ts         cursor-backed list helper, budget guard
 │     │  ├─ lib/
 │     │  │  ├─ fa.ts             Persian normalization, digit parsing, Jalali→ISO
@@ -46,6 +50,11 @@ torob-mcp/
 └─ docs/                         ENDPOINTS · THREAT_MODEL · PRIVACY · DEPENDENCIES · DEPLOY_*
 ```
 
+Tools are grouped by the upstream call they share rather than one file per tool — the four
+discovery tools are one `search/` request with different arguments, and five of the six
+product tools read one cached `details/` response. Splitting them into fifteen files would
+have hidden that, which is the thing most worth seeing when reading this code.
+
 `pnpm-workspace.yaml` covers `packages/*` and `apps/*`. `apps/node` depends on
 `@torob-mcp/core` via `workspace:*`; tsdown bundles core **into** the published artifact, so
 consumers install exactly one package.
@@ -55,8 +64,8 @@ consumers install exactly one package.
 1. **No types.** `packages/core/tsconfig.json` sets `"types": []` — `process`, `Buffer` and
    `node:*` module resolution are simply not in scope. Core compiles against
    `lib: ["ES2023", "DOM"]`.
-2. **Lint.** Biome `noRestrictedImports` bans `node:*`, `undici`, `pino`, `lru-cache` inside
-   `packages/core/**`, plus a `noProcessEnv`-style rule (`noRestrictedGlobals`: `process`,
+2. **Lint.** Oxlint `no-restricted-imports` bans `node:*`, `undici`, `pino`, `lru-cache` inside
+   `packages/core/**`, plus a `noProcessEnv`-style rule (`no-restricted-globals`: `process`,
    `Buffer`, `__dirname`, `setImmediate`).
 3. **CI proof.** The core test suite runs **twice** — once under Node and once under
    `@cloudflare/vitest-pool-workers`. A `node:*` leak fails the workerd run. That is the

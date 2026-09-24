@@ -7,7 +7,7 @@ Unofficial MCP server for torob.com. MIT. TS strict, ESM, Node 22+, pnpm.
 - `pnpm dev:http` — Streamable HTTP on 127.0.0.1:3000
 - `pnpm test` — fixture/unit/integration/e2e (no network)
 - `pnpm test:live` — live smoke tests (opt-in)
-- `pnpm check` — biome + typecheck
+- `pnpm check` — oxlint + oxfmt + typecheck
 - `pnpm inspect` — MCP Inspector
 
 ## Architecture rules
@@ -35,4 +35,4 @@ Unofficial MCP server for torob.com. MIT. TS strict, ESM, Node 22+, pnpm.
 - Never commit real user queries, cookies, or tokens in fixtures.
 
 ## Definition of done
-Biome clean, typecheck clean, coverage gates pass, e2e passes, and the Inspector has been checked manually for any tool that changed.
+oxlint + oxfmt clean, typecheck clean, coverage gates pass, e2e passes, and the Inspector has been checked manually for any tool that changed.

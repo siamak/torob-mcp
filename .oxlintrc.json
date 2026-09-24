@@ -1,0 +1,65 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "ignorePatterns": ["**/dist", "**/coverage", "fixtures/**"],
+  "rules": {
+    "typescript/no-explicit-any": "error"
+  },
+  "overrides": [
+    {
+      "files": ["packages/core/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "node:fs",
+                "message": "packages/core must stay runtime-agnostic — inject it through Runtime."
+              },
+              {
+                "name": "node:path",
+                "message": "packages/core must stay runtime-agnostic — inject it through Runtime."
+              },
+              {
+                "name": "node:crypto",
+                "message": "packages/core must stay runtime-agnostic — use crypto.subtle."
+              },
+              {
+                "name": "node:buffer",
+                "message": "packages/core must stay runtime-agnostic — use TextEncoder."
+              },
+              {
+                "name": "node:process",
+                "message": "packages/core must stay runtime-agnostic — config is injected."
+              },
+              {
+                "name": "node:util",
+                "message": "packages/core must stay runtime-agnostic."
+              },
+              {
+                "name": "node:stream",
+                "message": "packages/core must stay runtime-agnostic."
+              },
+              {
+                "name": "undici",
+                "message": "packages/core uses the global fetch injected through Runtime."
+              },
+              {
+                "name": "pino",
+                "message": "packages/core logs through Runtime.log."
+              },
+              {
+                "name": "lru-cache",
+                "message": "packages/core caches through Runtime.cache."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
