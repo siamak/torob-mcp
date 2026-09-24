@@ -30,8 +30,17 @@ jobs:
         continue-on-error: true
         run: pnpm test:live 2>&1 | tee live-output.txt
 
+      - name: Build for the Inspector run
+        run: pnpm build
+
+      # One real tools/call per tool group, through the same CLI a maintainer would use.
+      - name: MCP Inspector against the live API
+        id: inspector
+        continue-on-error: true
+        run: pnpm inspect:cli:live 2>&1 | tee -a live-output.txt
+
       - name: Open an issue on drift
-        if: steps.smoke.outcome == 'failure'
+        if: steps.smoke.outcome == 'failure' || steps.inspector.outcome == 'failure'
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |

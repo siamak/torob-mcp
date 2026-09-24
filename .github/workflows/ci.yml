@@ -41,6 +41,11 @@ jobs:
       - name: Test with coverage gates
         run: pnpm exec vitest run --coverage
 
+      # The Inspector is how a human checks this server by hand; running its CLI here catches a
+      # broken bin entry or bundle that the in-process tests cannot see. Makes no upstream request.
+      - name: MCP Inspector (CLI mode)
+        run: pnpm inspect:cli
+
       - name: Audit dependencies
         run: pnpm audit --audit-level=high
 

@@ -13,7 +13,9 @@
     "lint": "pnpm exec oxlint .",
     "fmt": "pnpm exec oxfmt",
     "inspect": "pnpm --filter torob-mcp inspect",
-    "test:coverage": "pnpm exec vitest run --coverage"
+    "test:coverage": "pnpm exec vitest run --coverage",
+    "inspect:cli": "node scripts/inspector-smoke.mjs",
+    "inspect:cli:live": "node scripts/inspector-smoke.mjs --live"
   },
   "devDependencies": {
     "@types/node": "22.10.2",
