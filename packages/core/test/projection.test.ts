@@ -75,7 +75,7 @@ describe('search results with everything present', () => {
       title_en: 'Phone',
       price_toman: 5_000_000,
       shop_count: 7,
-      is_ad: true,
+      sponsored: true,
       has_local_seller: true,
       badges: ['badge-one', 'badge-two'],
     });
@@ -104,7 +104,7 @@ describe('search results with nothing optional present', () => {
       'price_toman',
       'shop_count',
       'condition',
-      'is_ad',
+      'sponsored',
       'badges',
     ]) {
       expect(card, absent).not.toHaveProperty(absent);

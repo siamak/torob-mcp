@@ -24,6 +24,7 @@ function fixture(name: string): unknown {
 }
 
 const PRODUCT_ID = '57ea65ae-0798-4cd0-96a7-38d8af180345';
+const OTHER_ID = '935d1506-022e-43b8-b94e-b2543158bcd5';
 
 async function connect(runtime: Runtime): Promise<Client> {
   const server = new McpServer({ name: 'torob-mcp', version: 'test' });
@@ -112,7 +113,39 @@ describe('tool surface', () => {
   });
 });
 
+  it('names the sponsored flag on every tool that can return a paid placement', async () => {
+    const client = await connect(testRuntime());
+    const { tools } = await client.listTools();
+    for (const name of ['search_torob', 'browse_category', 'similar_products', 'find_best_value']) {
+      expect(tools.find((t) => t.name === name)?.description, name).toContain('sponsored:true');
+    }
+  });
+});
+
 describe('search_torob', () => {
+  it('surfaces sponsored placements rather than hiding them', async () => {
+    const { fetch } = recordingFetch({
+      responses: [
+        json({
+          results: [
+            { random_key: PRODUCT_ID, name1: 'an ad', price: 1, is_adv: true },
+            { random_key: OTHER_ID, name1: 'organic', price: 2 },
+          ],
+          count: 2,
+        }),
+      ],
+    });
+    const client = await connect(testRuntime({ fetch }));
+    const { data } = await call(client, 'search_torob', { query: 'x', limit: 5 });
+
+    const products = data['products'] as Record<string, unknown>[];
+    expect(products[0]?.['sponsored']).toBe(true);
+    // Organic cards omit the key entirely rather than carrying sponsored:false.
+    expect(products[1]).not.toHaveProperty('sponsored');
+    expect(data['note']).toContain('sponsored');
+  });
+
+
   it('returns compact cards with prices in Toman', async () => {
     const { fetch } = recordingFetch({ responses: [json(fixture('search'))] });
     const client = await connect(testRuntime({ fetch }));

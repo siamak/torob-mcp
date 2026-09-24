@@ -150,7 +150,10 @@ export async function runSearch(
 }
 
 function buildNote(args: SearchArgs): string {
-  const parts = ['Prices are in Toman and change constantly.'];
+  const parts = [
+    'Prices are in Toman and change constantly.',
+    'Cards marked sponsored:true are paid placements, not ranking merit.',
+  ];
   if (args.price_min_toman !== undefined || args.price_max_toman !== undefined) {
     parts.push('price_span_toman describes the unfiltered query, not your price filter.');
   }

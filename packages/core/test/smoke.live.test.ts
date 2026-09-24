@@ -80,8 +80,8 @@ const prices = (cards: Card[]): number[] =>
   cards.map((c) => c.price_toman).filter((p): p is number => typeof p === 'number');
 
 /** Torob mixes sponsored cards into results regardless of sort, so they are excluded. */
-const organic = (cards: (Card & { is_ad?: boolean })[]): Card[] =>
-  cards.filter((c) => c.is_ad !== true);
+const organic = (cards: (Card & { sponsored?: boolean })[]): Card[] =>
+  cards.filter((c) => c.sponsored !== true);
 
 const MOBILE_CATEGORY = 94;
 const APPLE_BRAND = 14;

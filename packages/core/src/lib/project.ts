@@ -19,7 +19,8 @@ export interface ProductCard {
   shop_count?: number;
   condition?: string;
   url: string;
-  is_ad?: boolean;
+  /** Torob placed this listing as a paid advertisement. Always surfaced, never hidden. */
+  sponsored?: boolean;
   badges?: string[];
   has_local_seller?: boolean;
 }
@@ -51,7 +52,7 @@ export function projectCard(card: Card): ProductCard {
   const condition = sanitizeOptional(card.stock_status, FIELD_LIMITS.badge);
   if (condition !== undefined) out.condition = condition;
 
-  if (card.is_adv === true) out.is_ad = true;
+  if (card.is_adv === true) out.sponsored = true;
   if (card.has_nearby_shop === true) out.has_local_seller = true;
 
   const badges = sanitizeList(

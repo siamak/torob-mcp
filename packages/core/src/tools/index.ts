@@ -108,7 +108,7 @@ export function registerTools(server: McpServer, runtime: Runtime): void {
     'search_torob',
     {
       title: 'Search Torob',
-      description: `Search torob.com, Iran's price-comparison engine, for products and their cheapest prices across Iranian online shops. Use this whenever someone asks what something costs in Iran, where to buy it, or what is available under a budget. Prices are in Toman. If the query is vague, misspelled, or written in Finglish (Persian typed in Latin letters), call torob_suggest first. To narrow by category or brand, call search_filters to get the ids. Follow up with product_details for one product, or product_sellers to see individual offers. ${THIRD_PARTY_NOTICE}`,
+      description: `Search torob.com, Iran's price-comparison engine, for products and their cheapest prices across Iranian online shops. Use this whenever someone asks what something costs in Iran, where to buy it, or what is available under a budget. Prices are in Toman. Cards carrying sponsored:true are paid placements Torob injected into the results - report them as ads, and never treat their position as a recommendation. If the query is vague, misspelled, or written in Finglish (Persian typed in Latin letters), call torob_suggest first. To narrow by category or brand, call search_filters to get the ids. Follow up with product_details for one product, or product_sellers to see individual offers. ${THIRD_PARTY_NOTICE}`,
       inputSchema: searchInput,
     },
     wrap(runtime, 'search_torob', (args) => runSearch(runtime, args, 'search_torob')),
@@ -177,7 +177,7 @@ export function registerTools(server: McpServer, runtime: Runtime): void {
     'similar_products',
     {
       title: 'Similar products on Torob',
-      description: `Torob’s own list of products similar to one you already have. Use to widen a search when the exact product is too expensive, out of stock, or when the user wants alternatives to compare. Feed two to five of the returned ids into compare_products. ${THIRD_PARTY_NOTICE}`,
+      description: `Torob’s own list of products similar to one you already have. Cards carrying sponsored:true are paid placements Torob injected into the results - report them as ads, and never treat their position as a recommendation. Use to widen a search when the exact product is too expensive, out of stock, or when the user wants alternatives to compare. Feed two to five of the returned ids into compare_products. ${THIRD_PARTY_NOTICE}`,
       inputSchema: similarProductsInput,
     },
     wrap(runtime, 'similar_products', (args) => runSimilarProducts(runtime, args)),
@@ -209,7 +209,7 @@ export function registerTools(server: McpServer, runtime: Runtime): void {
     'browse_category',
     {
       title: 'Browse a Torob category',
-      description: `Browse one Torob category without a search query - the whole catalogue for that category, filterable and sortable. Use when the user wants to explore ("show me gaming laptops") rather than search for a named product. Get category ids from search_filters or from the category_path in product_details. ${THIRD_PARTY_NOTICE}`,
+      description: `Browse one Torob category without a search query - the whole catalogue for that category, filterable and sortable. Cards carrying sponsored:true are paid placements Torob injected into the results - report them as ads, and never treat their position as a recommendation. Use when the user wants to explore ("show me gaming laptops") rather than search for a named product. Get category ids from search_filters or from the category_path in product_details. ${THIRD_PARTY_NOTICE}`,
       inputSchema: searchInput,
     },
     wrap(runtime, 'browse_category', (args) => runSearch(runtime, args, 'browse_category')),
@@ -242,7 +242,7 @@ export function registerTools(server: McpServer, runtime: Runtime): void {
     'find_best_value',
     {
       title: 'Find best value on Torob',
-      description: `Given a query and a budget in Toman, return the best-value matches ranked by how much headroom they leave against the budget and how many shops carry them. Use for "what is the best X under Y Toman" questions. The value_score is computed by this server, not by Torob - always confirm a specific pick with product_sellers before recommending it. ${THIRD_PARTY_NOTICE}`,
+      description: `Given a query and a budget in Toman, return the best-value matches ranked by how much headroom they leave against the budget and how many shops carry them. Use for "what is the best X under Y Toman" questions. Cards carrying sponsored:true are paid placements Torob injected into the results - report them as ads, and never treat their position as a recommendation. The value_score is computed by this server, not by Torob - always confirm a specific pick with product_sellers before recommending it. ${THIRD_PARTY_NOTICE}`,
       inputSchema: findBestValueInput,
     },
     wrap(runtime, 'find_best_value', (args) => runFindBestValue(runtime, args)),
