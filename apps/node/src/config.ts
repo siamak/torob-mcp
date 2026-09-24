@@ -41,7 +41,13 @@ const EnvSchema = z.object({
   TOROB_TTL_SHOP_S: intFromEnv(0, 604_800, 21_600),
   TOROB_TTL_CITY_S: intFromEnv(0, 604_800, 86_400),
   TOROB_MAX_SUBREQUESTS: intFromEnv(1, 50, 12),
-  TOROB_AUTH_TOKEN: z.string().min(16).optional(),
+  // An empty value means unset: .env files routinely carry `TOROB_AUTH_TOKEN=` with nothing after
+  // it, and that should mean "no token", not a startup failure.
+  TOROB_AUTH_TOKEN: z
+    .string()
+    .transform((v) => (v.trim() === '' ? undefined : v.trim()))
+    .pipe(z.string().min(16, 'must be at least 16 characters').optional())
+    .optional(),
   TOROB_ALLOWED_ORIGINS: csv,
   TOROB_ALLOWED_HOSTS: csv,
 });

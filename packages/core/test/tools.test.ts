@@ -375,26 +375,45 @@ describe('input validation', () => {
     expect(calls).toHaveLength(0);
   });
 
-  it('enforces batch and compare limits server-side', async () => {
+  /** The SDK reports a schema rejection as an error result rather than a thrown exception. */
+  const rejects = async (name: string, args: Record<string, unknown>): Promise<string> => {
     const client = await connect(testRuntime());
-    const eleven = Array.from({ length: 11 }, () => PRODUCT_ID);
+    const result = await client.callTool({ name, arguments: args });
+    expect(result.isError, `${name} should have rejected ${JSON.stringify(args)}`).toBe(true);
+    return ((result.content as { text: string }[])[0]?.text ?? '').toLowerCase();
+  };
 
-    await expect(client.callTool({ name: 'get_products_batch', arguments: { product_ids: eleven } }))
-      .rejects.toThrow();
-    await expect(client.callTool({ name: 'compare_products', arguments: { product_ids: [PRODUCT_ID] } }))
-      .rejects.toThrow();
+  it('enforces the batch limit server-side', async () => {
+    const message = await rejects('get_products_batch', {
+      product_ids: Array.from({ length: 11 }, () => PRODUCT_ID),
+    });
+    expect(message).toContain('validation');
+  });
+
+  it('enforces the compare minimum and maximum server-side', async () => {
+    expect(await rejects('compare_products', { product_ids: [PRODUCT_ID] })).toContain('validation');
+    expect(
+      await rejects('compare_products', {
+        product_ids: Array.from({ length: 6 }, () => PRODUCT_ID),
+      }),
+    ).toContain('validation');
   });
 
   it('enforces the page-size ceiling', async () => {
-    const client = await connect(testRuntime());
-    await expect(client.callTool({ name: 'search_torob', arguments: { query: 'x', limit: 500 } }))
-      .rejects.toThrow();
+    expect(await rejects('search_torob', { query: 'x', limit: 500 })).toContain('validation');
   });
 
   it('enforces the query length limit', async () => {
-    const client = await connect(testRuntime());
-    await expect(client.callTool({ name: 'search_torob', arguments: { query: 'x'.repeat(500) } }))
-      .rejects.toThrow();
+    expect(await rejects('search_torob', { query: 'x'.repeat(500) })).toContain('validation');
+  });
+
+  it('enforces numeric ranges on ids', async () => {
+    expect(await rejects('shop_profile', { shop_id: -1 })).toContain('validation');
+    expect(await rejects('browse_category', { category_id: 0 })).toContain('validation');
+  });
+
+  it('rejects an unknown sort rather than silently ignoring it', async () => {
+    expect(await rejects('search_torob', { query: 'x', sort: 'random' })).toContain('validation');
   });
 
   it('refuses a composite call that would exceed the subrequest budget', async () => {
