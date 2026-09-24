@@ -165,3 +165,32 @@ minimal relay with an Iranian egress IP behind Cloudflare Tunnel. Results will b
 - **Rotate the token** by restarting with a new `TOROB_AUTH_TOKEN`; there is no session store to
   clear.
 - **`/healthz` makes no upstream call**, so monitoring it cannot contribute to a block.
+
+## Releasing (maintainer)
+
+Publishing is **gated on a human**. The release workflow fires on a `v*` tag and will push to npm
+and GHCR, so the tag is the point of no return.
+
+Before tagging:
+
+1. `pnpm check && pnpm test:coverage && pnpm build` — clean.
+2. `pnpm inspect` — drive by hand every tool that changed. `pnpm inspect:cli` covers the mechanics
+   in CI, but a human should look at the actual output of a changed tool before it ships.
+3. `pnpm test:live` from a host that can reach Torob.
+4. `cd apps/node && pnpm pack --pack-destination /tmp`, extract it somewhere else, install its
+   dependencies, and run the binary. `apps/node/test/package.test.ts` guards this automatically now,
+   because the bundle once shipped importing a private workspace package and would have broken
+   every `npx torob-mcp`.
+5. Docker: `docker build -t torob-mcp:rc . && docker run --rm --read-only -p 3000:3000 -e TOROB_AUTH_TOKEN=... torob-mcp:rc`
+   then check `/healthz`.
+
+Then:
+
+```bash
+npm version <patch|minor|major> --workspace torob-mcp
+git push && git push --tags
+```
+
+npm publishes with provenance through GitHub OIDC trusted publishing — there is no long-lived npm
+token, and publishing from a laptop is not the supported path. The image is scanned with Trivy and
+signed with cosign keyless in the same workflow.

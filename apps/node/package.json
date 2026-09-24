@@ -1,7 +1,7 @@
 {
   "name": "torob-mcp",
   "version": "0.1.0",
-  "description": "Unofficial MCP server for torob.com \u2014 Iran's price comparison engine",
+  "description": "Unofficial MCP server for torob.com — Iran's price comparison engine",
   "keywords": [
     "iran",
     "mcp",
@@ -43,10 +43,10 @@
     "pino": "10.3.1",
     "zod": "4.6.5"
   },
-  "engines": {
-    "node": ">=22"
-  },
   "devDependencies": {
     "@torob-mcp/core": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
