@@ -5,14 +5,7 @@
  * imports a platform API.
  */
 
-export type {
-  Cache,
-  CacheTtls,
-  CoreConfig,
-  Logger,
-  RateLimiter,
-  Runtime,
-} from './runtime.ts';
+export type { Cache, CacheTtls, CoreConfig, Logger, RateLimiter, Runtime } from './runtime.ts';
 export { DEFAULT_CONFIG, DEFAULT_TTLS } from './runtime.ts';
 export { registerTools } from './tools/index.ts';
 export { ALLOWED_HOSTS } from './torob/endpoints.ts';

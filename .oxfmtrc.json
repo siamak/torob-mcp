@@ -11,9 +11,5 @@
   "arrowParens": "always",
   "bracketSameLine": false,
   "bracketSpacing": true,
-  "ignorePatterns": [
-    "**/dist",
-    "**/coverage",
-    "fixtures/**"
-  ]
+  "ignorePatterns": ["**/dist", "**/coverage", "fixtures/**"]
 }

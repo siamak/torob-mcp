@@ -1,21 +1,25 @@
 {
   "name": "torob-mcp",
   "version": "0.1.0",
-  "description": "Unofficial MCP server for torob.com \u2014 Iran's price comparison engine",
+  "description": "Unofficial MCP server for torob.com — Iran's price comparison engine",
+  "keywords": [
+    "iran",
+    "mcp",
+    "model-context-protocol",
+    "price-comparison",
+    "torob"
+  ],
   "license": "MIT",
-  "type": "module",
   "bin": {
     "torob-mcp": "./dist/bin.mjs"
   },
-  "main": "./dist/bin.mjs",
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
-  "engines": {
-    "node": ">=22"
-  },
+  "type": "module",
+  "main": "./dist/bin.mjs",
   "scripts": {
     "build": "tsdown",
     "dev": "node --experimental-strip-types src/bin.ts",
@@ -30,11 +34,7 @@
     "pino": "10.3.1",
     "zod": "4.6.5"
   },
-  "keywords": [
-    "mcp",
-    "torob",
-    "iran",
-    "price-comparison",
-    "model-context-protocol"
-  ]
+  "engines": {
+    "node": ">=22"
+  }
 }
