@@ -111,7 +111,6 @@ describe('tool surface', () => {
       expect(tool?.description, name).toContain('third-party');
     }
   });
-});
 
   it('names the sponsored flag on every tool that can return a paid placement', async () => {
     const client = await connect(testRuntime());
@@ -144,7 +143,6 @@ describe('search_torob', () => {
     expect(products[1]).not.toHaveProperty('sponsored');
     expect(data['note']).toContain('sponsored');
   });
-
 
   it('returns compact cards with prices in Toman', async () => {
     const { fetch } = recordingFetch({ responses: [json(fixture('search'))] });
